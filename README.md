@@ -55,6 +55,7 @@ This is an incomplete guide to the contents of Footnote Utilities, highlighting 
 * TextureScroller
 * KinematicBody - a character controller that uses an arbitrary mesh!
 * PlayableAnimationController - trigger non legacy animations from code by directly passing clips
+* Behaviour trees - see the README in the Behaviour Tree folder
 
 ### Scriptable Object Architecture
 
