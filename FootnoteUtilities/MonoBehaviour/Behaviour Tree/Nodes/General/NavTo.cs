@@ -86,7 +86,7 @@ public class NavTo : Node
             if (targetTransform != null)
                 navMeshAgent.SetDestination(targetTransform.position);
 
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
 
         parent.HandleChildComplete();

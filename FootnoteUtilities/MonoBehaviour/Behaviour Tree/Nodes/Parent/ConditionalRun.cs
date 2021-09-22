@@ -58,7 +58,7 @@ public class ConditionalRun : Node, ParentNode
             if (condition.Invoke())
                 break;
 
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
         
         parent.HandleChildInterrupt(this);

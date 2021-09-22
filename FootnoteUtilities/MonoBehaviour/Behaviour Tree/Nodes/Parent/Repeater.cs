@@ -31,7 +31,7 @@ public class Repeater : Node, ParentNode
     private IEnumerator DeferredRepeat()
     {
         Cancel();
-        yield return new WaitForEndOfFrame();
+        yield return null;
         Run(this);
     }
 
