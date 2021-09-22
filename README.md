@@ -97,18 +97,19 @@ Generic classes cannot be serialised, but extending classes that define the gene
 
 ## Other Libraries we like
 
-Level Design: [RealtimeCsg] (https://github.com/LogicalError/realtime-CSG-for-unity/)
-Tweening: [ZestKit](https://github.com/prime31/ZestKit)
-Screen Transitions: [TransitionKit] (https://github.com/prime31/TransitionKit)
+* Level Design: [RealtimeCsg] (https://github.com/LogicalError/realtime-CSG-for-unity/)
+* Tweening: [ZestKit](https://github.com/prime31/ZestKit)
+* Screen Transitions: [TransitionKit] (https://github.com/prime31/TransitionKit)
 
 Easy and Unity style dependency injection: [Medicine] (https://github.com/apkd/Medicine)
 
 ## Attribution
 
-Object Pooling: https://github.com/thefuntastic/unity-object-pool
-KinematicBody: Extensively modified version of: https://github.com/marmitoTH/Unity-Kinematic-Body
-Button Attribute: https://github.com/dbrizov/NaughtyAttributes
-Fix Class Name: http://www.pellegrinoprincipe.com/
-Light Flicker: https://gist.github.com/sinbad/4a9ded6b00cf6063c36a4837b15df969
-ShakeableTransform: https://github.com/IronWarrior/UnityCameraShake/blob/master/Assets/ShakeableTransform.cs
-Sokpop Shaders: https://www.youtube.com/watch?v=XatLA5SGgAs
+* Object Pooling: https://github.com/thefuntastic/unity-object-pool
+* KinematicBody: Extensively modified version of: https://github.com/marmitoTH/Unity-Kinematic-Body
+* Button Attribute: https://github.com/dbrizov/NaughtyAttributes
+* Fix Class Name: http://www.pellegrinoprincipe.com/
+* Light Flicker: https://gist.github.com/sinbad/4a9ded6b00cf6063c36a4837b15df969
+* ShakeableTransform: https://github.com/IronWarrior/UnityCameraShake/blob/master/Assets/ShakeableTransform.cs
+* Sokpop Shaders: https://www.youtube.com/watch?v=XatLA5SGgAs
+* Waypoint Gizmos: https://github.com/SebLague/Intro-to-Gamedev/blob/master/Episode%2023/Assets/Guard.cs

@@ -66,6 +66,5 @@ Node tree = new Sequence().Builder()
 
 Node tree = new Selector().Builder()
 	.Add(ConditionalRun.WithReevaluate(this, () => fleeTrigger(), GetFleeTree()))
-	.Add(ConditionalRun.WithReevaluate(this, () => ActivationTrigger(), GetMainTree()))
 	.Add(new Wait(this))
 	.Build();
