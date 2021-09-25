@@ -15,6 +15,7 @@ public class NavTo : Node
     //Can be null if blackboard variable is a vector3
     //Vector3 is preferrable if possible, because it means nav mesh agent pathing does not update every frame
     private Transform targetTransform;
+    private Vector3 cachedTargetPosition;
 
     private Coroutine currentNavTo;
 
@@ -48,6 +49,8 @@ public class NavTo : Node
     public void Run(ParentNode parent)
     {
         Vector3 location;
+        Component targetComponent;
+
         if (root.Blackboard.TryGetTypedValue(destinationKey, out location))
         {
             NavMeshHit hit;
@@ -65,8 +68,11 @@ public class NavTo : Node
                 parent.HandleChildFailed();
             }
         }
-        else if (root.Blackboard.TryGetTypedValue(destinationKey, out targetTransform))
+        else if (root.Blackboard.TryGetTypedValue(destinationKey, out targetComponent))
         {
+            targetTransform = targetComponent.transform;
+            cachedTargetPosition = targetTransform.position;
+
             navMeshAgent.isStopped = false;
             navMeshAgent.SetDestination(targetTransform.position);
 
@@ -74,7 +80,7 @@ public class NavTo : Node
         }
         else
         {
-            Debug.Log("NavTo could not find Vector3 or Transform in blackboard with key:" + destinationKey);
+            Debug.Log("NavTo could not find Vector3 or Component in blackboard with key:" + destinationKey);
             parent.HandleChildFailed();
         }
     }
@@ -83,9 +89,12 @@ public class NavTo : Node
     {
         while (!navMeshAgent.HasArrived())
         {
-            if (targetTransform != null)
+            if (targetTransform != null && Vector3.Distance(cachedTargetPosition, targetTransform.position) > 0.5)
+            {
                 navMeshAgent.SetDestination(targetTransform.position);
-
+                cachedTargetPosition = targetTransform.position;
+            }
+                
             yield return null;
         }
 

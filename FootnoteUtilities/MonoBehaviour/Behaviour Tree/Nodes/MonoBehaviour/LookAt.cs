@@ -12,7 +12,8 @@ public class LookAt : MonoBehaviour, Node
     private string targetKey;
     private bool continuous;
 
-    private Transform target;
+    private Component targetComponent;
+    private Vector3? targetVector;
     private ParentNode parent;
     
     public LookAt Init(Brain brain, string targetKey, bool continuous = false)
@@ -23,38 +24,53 @@ public class LookAt : MonoBehaviour, Node
         return this;
     }
 
+    public LookAt Init(Brain brain, string targetKey, float speed, bool continuous = false)
+    {
+        this.brain = brain;
+        this.targetKey = targetKey;
+        this.continuous = continuous;
+        this.speed = speed;
+        return this;
+    }
+
     public void LateUpdate()
     {
-        if (target != null)
+        if (targetVector == null && targetComponent == null)
+            return;
+        
+        Vector3 lookPos = (targetComponent != null ? targetComponent.transform.position : targetVector.Value) - transform.position;
+        lookPos.y = 0;
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(lookPos), Time.deltaTime * speed);
+
+        if (!continuous && Quaternion.Angle(transform.rotation, Quaternion.LookRotation(lookPos)) < 10)
         {
-            var lookPos = target.position - transform.position;
-            lookPos.y = 0;
-
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lookPos), Time.deltaTime * speed);
-
-            if (!continuous && Quaternion.Angle(transform.rotation, Quaternion.LookRotation(lookPos)) < 10)
-            {
-                parent.HandleChildComplete();
-                target = null;
-            }
+            parent.HandleChildComplete();
+            targetVector = null;
+            targetComponent = null;
         }
     }
 
     public void Run(ParentNode parent)
     {
-        if (!brain.Blackboard.TryGetTypedValue(targetKey, out target))
+        this.parent = parent;
+
+        if (brain.Blackboard.TryGetTypedValue(targetKey, out targetComponent))
         {
-            Debug.Log("LookAt could not find Transform in blackboard with key:" + targetKey);
-            parent.HandleChildFailed();
+            return;
         }
-        else
+        else if (brain.Blackboard.TryGetTypedValue(targetKey, out targetVector))
         {
-            this.parent = parent;
+            return;            
         }
+
+        Debug.Log("LookAt could not find Component or Vector3 in blackboard with key:" + targetKey);
+        parent.HandleChildFailed();
     }
 
     public void Cancel()
     {
-        target = null;
+        targetComponent = null;
+        targetVector = null;
     }
 }
