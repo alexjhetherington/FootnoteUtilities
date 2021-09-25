@@ -28,6 +28,7 @@ public class Waypoints : MonoBehaviour
         Vector3 startPosition = transform.GetChild(0).position;
         Vector3 previousPosition = startPosition;
 
+        Gizmos.color = Color.blue;
         foreach (Transform waypoint in transform)
         {
             Gizmos.DrawSphere(waypoint.position, .3f);
