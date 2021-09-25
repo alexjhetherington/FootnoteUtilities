@@ -58,7 +58,7 @@ public class ConditionalRun : Node, ParentNode
             if (condition.Invoke())
                 break;
 
-            yield return null;
+            yield return new WaitForSeconds(0.1f);
         }
         
         parent.HandleChildInterrupt(this);
@@ -72,6 +72,11 @@ public class ConditionalRun : Node, ParentNode
     public void HandleChildFailed()
     {
         parent.HandleChildFailed();
+
+        if (reevaluate && brain != null)
+        {
+            brain.StartCoroutine(Reevaluate_Coroutine(parent));
+        }  
     }
 
     public void HandleChildInterrupt(Node child)
