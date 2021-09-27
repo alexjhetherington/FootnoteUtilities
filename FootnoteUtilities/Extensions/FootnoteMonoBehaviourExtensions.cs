@@ -14,8 +14,9 @@ public static class FootnoteMonoBehaviourExtensions
         action.Invoke();
     }
 
-    public static void DoOnProgress(this MonoBehaviour monoBehaviour, float length, Action<float> action) =>
+    public static void DoOnProgress(this MonoBehaviour monoBehaviour, float length, Action<float> action) {
         monoBehaviour.StartCoroutine(DoOnProgress(length, action));
+    }
 
     private static IEnumerator DoOnProgress(float length, Action<float> action)
     {
@@ -24,7 +25,7 @@ public static class FootnoteMonoBehaviourExtensions
         while(progress < 1)
         {
             yield return null;
-            progress = Mathf.Min(1, progress + Time.deltaTime);
+            progress = Mathf.Min(1, progress + Time.deltaTime / length);
             action.Invoke(progress);
         }
     }
