@@ -27,15 +27,13 @@ public class WhileCondition : Node, ParentNode
     public WhileCondition(Brain brain, Func<bool> condition, Node child) : this(null, condition, child, false) { }
     public static WhileCondition WithPriority(Brain brain, Func<bool> condition, Node child) { return new WhileCondition(brain, condition, child, true); }
 
-    public void Cancel()
+    public void ResetCoroutines()
     {
         if (checkBecameTrue != null)
             brain.StopCoroutine(checkBecameTrue);
 
         if (checkBecameFalse != null)
             brain.StopCoroutine(checkBecameFalse);
-
-        child.Cancel();
     }
 
     public void Run(ParentNode parent)
@@ -49,10 +47,7 @@ public class WhileCondition : Node, ParentNode
         }
         else
         {
-            parent.HandleChildFailed();
-
-            if(reevaluate && brain != null)
-                checkBecameTrue = brain.StartCoroutine(CheckBecameTrue_Coroutine(parent));
+            HandleChildFailed();
         }
     }
 
@@ -79,17 +74,19 @@ public class WhileCondition : Node, ParentNode
             yield return new WaitForSeconds(0.1f);
         }
 
-        Cancel();
+        child.Cancel();
         HandleChildFailed();
     }
 
     public void HandleChildComplete()
     {
+        ResetCoroutines();
         parent.HandleChildComplete();
     }
 
     public void HandleChildFailed()
     {
+        ResetCoroutines();
         parent.HandleChildFailed();
 
         if (reevaluate && brain != null)
@@ -100,7 +97,7 @@ public class WhileCondition : Node, ParentNode
 
     public void HandleChildInterrupt(Node child)
     {
-        Cancel();
+        ResetCoroutines();
         parent.HandleChildInterrupt(this);
     }
 }
