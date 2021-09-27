@@ -27,6 +27,12 @@ public class WhileCondition : Node, ParentNode
     public WhileCondition(Brain brain, Func<bool> condition, Node child) : this(null, condition, child, false) { }
     public static WhileCondition WithPriority(Brain brain, Func<bool> condition, Node child) { return new WhileCondition(brain, condition, child, true); }
 
+    public void Cancel()
+    {
+        ResetCoroutines();
+        child.Cancel();
+    }
+
     public void ResetCoroutines()
     {
         if (checkBecameTrue != null)
