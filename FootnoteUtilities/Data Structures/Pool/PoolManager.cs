@@ -55,7 +55,8 @@ public class PoolManager : Singleton<PoolManager>
 		var pool = prefabLookup[prefab];
 
 		var clone = pool.GetItem();
-		clone.transform.SetPositionAndRotation(position, rotation);
+        clone.SetActive(false); //When initiated for the first time, set active as false so rotation and position will be correct in onEnable
+        clone.transform.SetPositionAndRotation(position, rotation);
 		clone.SetActive(true);
 
 		instanceLookup.Add(clone, pool);
