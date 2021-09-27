@@ -6,13 +6,28 @@ public class Repeater : Node, ParentNode
 {
     private Node node;
     private Brain brain;
+    private ParentNode parent;
     
     private Coroutine deferredRun;
+
+    private bool untilSuccess = false;
+
+    private Repeater(Brain brain, Node node, bool untilSuccess)
+    {
+        this.node = node;
+        this.brain = brain;
+        this.untilSuccess = untilSuccess;
+    }
 
     public Repeater(Brain brain, Node node)
     {
         this.node = node;
         this.brain = brain;
+    }
+    
+    public static Repeater UntilSuccess(Brain brain, Node node)
+    {
+        return new Repeater(brain, node, true);
     }
 
     public void Cancel()
@@ -25,6 +40,12 @@ public class Repeater : Node, ParentNode
 
     public void Run(ParentNode parent)
     {
+        this.parent = parent;
+        InternalRun();
+    }
+
+    private void InternalRun()
+    {
         node.Run(this);
     }
 
@@ -32,12 +53,15 @@ public class Repeater : Node, ParentNode
     {
         Cancel();
         yield return null;
-        Run(this);
+        InternalRun();
     }
 
     public void HandleChildComplete()
     {
-        brain.StartCoroutine(DeferredRepeat());
+        if (untilSuccess)
+            parent.HandleChildComplete();
+        else
+            brain.StartCoroutine(DeferredRepeat());
     }
 
     public void HandleChildFailed()

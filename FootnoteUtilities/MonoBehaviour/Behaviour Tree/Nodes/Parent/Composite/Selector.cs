@@ -9,7 +9,7 @@ public class Selector : Node, ParentNode
     private int index = 0;
     private ParentNode parent;
 
-    public void Add(Node node)
+    private void Add(Node node)
     {
         nodes.Add(node);
     }

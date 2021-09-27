@@ -10,7 +10,7 @@ public class FirstToFinish : Node, ParentNode
 
     private bool receivedStatus;
 
-    public void Add(Node node)
+    private void Add(Node node)
     {
         nodes.Add(node);
     }
