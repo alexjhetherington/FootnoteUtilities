@@ -24,7 +24,7 @@ public class ShootProjectileAt : ShootAt
             Vector3 direction = (target.position - transform.position).normalized;
             direction = Quaternion.Euler(0, UnityEngine.Random.Range(-horizontalSpray / 2, horizontalSpray / 2), 0) * direction;
             direction = Quaternion.Euler(UnityEngine.Random.Range(-verticalSpray / 2, verticalSpray / 2), 0, 0) * direction;
-            GameObject go = Instantiate(projectilePrefab, new Vector3(transform.position.x, 1.3f, transform.position.z) + (direction * 1f), Quaternion.LookRotation(direction, Vector3.up));
+            PoolManager.SpawnObject(projectilePrefab, transform.position + Vector3.up + (direction * 1f), Quaternion.LookRotation(direction, Vector3.up));
             parent.HandleChildComplete();
         }
         else
