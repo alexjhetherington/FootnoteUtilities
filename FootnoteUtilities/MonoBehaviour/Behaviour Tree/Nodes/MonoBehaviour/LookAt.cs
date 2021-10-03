@@ -43,7 +43,7 @@ public class LookAt : MonoBehaviour, Node
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(lookPos), Time.deltaTime * speed);
 
-        if (!continuous && Quaternion.Angle(transform.rotation, Quaternion.LookRotation(lookPos)) < 10)
+        if (!continuous && Quaternion.Angle(transform.rotation, Quaternion.LookRotation(lookPos)) < 0.5)
         {
             parent.HandleChildComplete();
             targetVector = null;
