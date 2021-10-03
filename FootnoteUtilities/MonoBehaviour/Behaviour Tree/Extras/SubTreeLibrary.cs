@@ -51,8 +51,11 @@ public static class SubTreeLibrary
                                     .Add(new NavTo(brain, vector3SelectedKey, brain.GetComponent<NavMeshAgent>()))
                                     .Add(new WaitForCondition(brain, 0.1f, () =>
                                     {
-                                        Vector3 dest = brain.Blackboard.Get<Vector3>(vector3SelectedKey);
-                                        return Vector3.Distance(dest, brain.transform.position) < 1.5f;
+                                        Vector3 dest;
+                                        if(brain.Blackboard.TryGetTypedValue(vector3SelectedKey, out dest))
+                                            return Vector3.Distance(dest, brain.transform.position) < 1.5f;
+                                        else
+                                            return false;
                                     }))
                                     .Build())
                                 .Add(new RunAction(() =>
