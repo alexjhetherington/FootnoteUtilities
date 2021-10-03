@@ -28,8 +28,13 @@ This is an incomplete guide to the contents of Footnote Utilities, highlighting 
 
 ### Data Structures
 
+* LayerGroup (see note below) to manage layers
 * Use a TimeArray to discard elements after the given amount of time has passed. It must be manually ticked
 * Use PoolManager.SpawnObject and PoolManager.ReleaseObject for object pooling
+
+Layers are per project static data. To avoid complication but still stay safe I recommend hardcoding layers, referencing static string variables so typos can be fixed all in one place.
+
+This isn't possible for code that you intend to share between projects where layers may be named differently. Use the LayerGroup scriptable object, a reference to which can be exposed to the Unity editor, to write components with layers that can be customised per project while still keeping layers in one place.
 
 ### Editor
 
