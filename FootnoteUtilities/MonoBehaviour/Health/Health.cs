@@ -5,12 +5,13 @@ using UnityEngine.Events;
 
 public class Health : MonoBehaviour
 {
+    [SerializeField] private bool debugInvincible = false;
     [SerializeField] private int maximumHealth = 100;
 
     [SerializeField] private IntVariable health_so;
     private int health_prim;
 
-    private OnDiedHandler onDiedHandler;
+    private OnDiedHandler[] onDiedHandlers;
     private OnHitHandler[] onHitHandlers;
 
     public int Value {
@@ -20,10 +21,14 @@ public class Health : MonoBehaviour
         }
         set
         {
+            if (debugInvincible && Debug.isDebugBuild)
+                return;
+
             if (value < 0) value = 0;
 
-            if (value == 0 && onDiedHandler != null)
-                onDiedHandler.OnDied();
+            if (value == 0 && onDiedHandlers != null)
+                foreach (OnDiedHandler onDiedHandler in onDiedHandlers)
+                    onDiedHandler.OnDied();
 
             if (value < Value)
                 foreach (OnHitHandler onHitHandler in onHitHandlers)
@@ -40,7 +45,7 @@ public class Health : MonoBehaviour
     void Start()
     {
         onHitHandlers = GetComponents<OnHitHandler>();
-        onDiedHandler = GetComponent<OnDiedHandler>();
+        onDiedHandlers = GetComponents<OnDiedHandler>();
         Value = maximumHealth;
     }
 }
