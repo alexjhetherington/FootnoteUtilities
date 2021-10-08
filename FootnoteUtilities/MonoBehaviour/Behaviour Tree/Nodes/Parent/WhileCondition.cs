@@ -48,8 +48,8 @@ public class WhileCondition : Node, ParentNode
 
         if (condition.Invoke())
         {
-            child.Run(this);
             checkBecameFalse = brain.StartCoroutine(CheckBecameFalse_Coroutine(parent));
+            child.Run(this);
         }
         else
         {
