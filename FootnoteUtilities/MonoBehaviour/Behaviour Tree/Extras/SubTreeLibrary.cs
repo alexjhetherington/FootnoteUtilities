@@ -38,44 +38,58 @@ public static class SubTreeLibrary
 
     public static Node Waypoints(Brain brain, string vector3QueueKey, string vector3SelectedKey)
     {
-        Repeater root = Repeater.UntilSuccess(brain, new Sequence().Builder()
-                                .Add(new RunAction(() =>
-                                {
-                                    List<Vector3> waypoints;
-                                    brain.Blackboard.TryGetTypedValue(vector3QueueKey, out waypoints);
+        Node root = new Sequence().Builder()
 
-                                    Vector3 next = waypoints[0];
-                                    brain.Blackboard[vector3SelectedKey] = next;
-                                }))
-                                .Add(new FirstToFinish().Builder()
-                                    .Add(new NavTo(brain, vector3SelectedKey, brain.GetComponent<NavMeshAgent>()))
-                                    .Add(new WaitForCondition(brain, 0.1f, () =>
+                                //Early fail if no waypoints
+                                .Add(new Inverter(IsOutOfWayPoints(brain, vector3QueueKey)))
+
+                                .Add(Repeater.UntilSuccess(brain, new Sequence().Builder()
+                                    .Add(new RunAction(() =>
                                     {
-                                        Vector3 dest;
-                                        if(brain.Blackboard.TryGetTypedValue(vector3SelectedKey, out dest))
-                                            return Vector3.Distance(dest, brain.transform.position) < 1.5f;
-                                        else
-                                            return false;
+                                        List<Vector3> waypoints;
+                                        brain.Blackboard.TryGetTypedValue(vector3QueueKey, out waypoints);
+
+                                        Vector3 next = waypoints[0];
+                                        brain.Blackboard[vector3SelectedKey] = next;
                                     }))
-                                    .Build())
-                                .Add(new RunAction(() =>
-                                {
-                                    List<Vector3> waypoints;
-                                    brain.Blackboard.TryGetTypedValue(vector3QueueKey, out waypoints);
-                                    waypoints.RemoveAt(0);
-                                }))
-                                .Add(new Condition(() =>
-                                {
-                                    List<Vector3> waypoints;
-                                    brain.Blackboard.TryGetTypedValue(vector3QueueKey, out waypoints);
+                                    .Add(new FirstToFinish().Builder()
+                                        .Add(new NavTo(brain, vector3SelectedKey, brain.GetComponent<NavMeshAgent>()))
+                                        .Add(new WaitForCondition(brain, 0.1f, () =>
+                                        {
+                                            Vector3 dest;
+                                            if (brain.Blackboard.TryGetTypedValue(vector3SelectedKey, out dest))
+                                                return Vector3.Distance(dest, brain.transform.position) < 1.5f;
+                                            else
+                                                return false;
+                                        }))
+                                        .Build())
+                                    .Add(new RunAction(() =>
+                                    {
+                                        List<Vector3> waypoints;
+                                        brain.Blackboard.TryGetTypedValue(vector3QueueKey, out waypoints);
+                                        waypoints.RemoveAt(0);
+                                    }))
+                                    .Add(IsOutOfWayPoints(brain, vector3QueueKey))
+                                    .Build()))
 
-                                    if (waypoints.Count == 0)
-                                        Debug.Log("Got to end of waypoints");
-
-                                    return waypoints.Count == 0;
-                                }))
-                            .Build());
+                                .Build();
+            
+           
 
         return root;
+    }
+
+    private static Node IsOutOfWayPoints(Brain brain, string vector3QueueKey)
+    {
+        return new Condition(() =>
+        {
+            List<Vector3> waypoints;
+            brain.Blackboard.TryGetTypedValue(vector3QueueKey, out waypoints);
+
+            if (waypoints.Count == 0)
+                Debug.Log("Got to end of waypoints");
+
+            return waypoints.Count == 0;
+        });
     }
 }
