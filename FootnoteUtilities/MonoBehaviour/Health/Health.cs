@@ -6,7 +6,7 @@ using UnityEngine.Events;
 public class Health : MonoBehaviour
 {
     [SerializeField] private bool debugInvincible = false;
-    [SerializeField] private int maximumHealth = 100;
+    public int maximumHealth = 100;
 
     [SerializeField] private IntVariable health_so;
     private int health_prim;
