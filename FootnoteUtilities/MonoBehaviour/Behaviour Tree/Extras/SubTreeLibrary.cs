@@ -4,12 +4,15 @@ using UnityEngine.AI;
 
 public static class SubTreeLibrary
 {
-    public static Node FireBurst(Brain brain, ShootAt shootAt, int burstAmount, float waitBetween)
+    public static Node FireBurst(Brain brain, string targetKey, int burstAmount, float waitBetween, Shoot shoot)
     {
         var root = new Sequence().Builder();
+
+        root.Add(new Condition(() => brain.Blackboard.ContainsKey(targetKey)));
+
         for(int i = 0; i < burstAmount; i++)
         {
-            root.Add(shootAt);
+            root.Add(new RunAction(() => shoot.Shoot(brain.Blackboard.Get<Transform>(targetKey))));
             root.Add(new Wait(brain, waitBetween));
         }
         return root.Build();
@@ -85,9 +88,6 @@ public static class SubTreeLibrary
         {
             List<Vector3> waypoints;
             brain.Blackboard.TryGetTypedValue(vector3QueueKey, out waypoints);
-
-            if (waypoints.Count == 0)
-                Debug.Log("Got to end of waypoints");
 
             return waypoints.Count == 0;
         });
