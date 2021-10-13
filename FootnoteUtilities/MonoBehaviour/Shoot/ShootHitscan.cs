@@ -10,9 +10,9 @@ public class ShootHitscan : MonoBehaviour, Shoot
 
     public event Action<Vector3> bulletReached;
 
-    public void Shoot(Transform target)
+    public void Shoot(Vector3 target)
     {
-        Vector3 direction = (target.position - transform.position).normalized;
+        Vector3 direction = (target - transform.position).normalized;
         Vector3 origin = transform.position + Vector3.up;
 
         direction = Quaternion.Euler(0, UnityEngine.Random.Range(-horizontalSpray / 2, horizontalSpray / 2), 0) * direction;

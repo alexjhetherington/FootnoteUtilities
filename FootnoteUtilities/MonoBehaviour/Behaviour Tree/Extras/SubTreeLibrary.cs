@@ -12,7 +12,7 @@ public static class SubTreeLibrary
 
         for(int i = 0; i < burstAmount; i++)
         {
-            root.Add(new RunAction(() => shoot.Shoot(brain.Blackboard.Get<Transform>(targetKey))));
+            root.Add(new RunAction(() => shoot.Shoot(brain.Blackboard.Get<Transform>(targetKey).position)));
             root.Add(new Wait(brain, waitBetween));
         }
         return root.Build();

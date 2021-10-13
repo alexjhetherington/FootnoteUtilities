@@ -9,9 +9,9 @@ public class ShootProjectile : MonoBehaviour, Shoot
 
     [SerializeField] private GameObject projectilePrefab = default;
 
-    public void Shoot(Transform target)
+    public void Shoot(Vector3 target)
     {
-        Vector3 direction = (target.position - transform.position).normalized;
+        Vector3 direction = (target - transform.position).normalized;
         direction = Quaternion.Euler(0, UnityEngine.Random.Range(-horizontalSpray / 2, horizontalSpray / 2), 0) * direction;
         direction = Quaternion.Euler(UnityEngine.Random.Range(-verticalSpray / 2, verticalSpray / 2), 0, 0) * direction;
         PoolManager.SpawnObject(projectilePrefab, transform.position + Vector3.up + (direction * 1f), Quaternion.LookRotation(direction, Vector3.up));
