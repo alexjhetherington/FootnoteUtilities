@@ -62,6 +62,14 @@ This isn't possible for code that you intend to share between projects where lay
 * PlayableAnimationController - trigger non legacy animations from code by directly passing clips
 * Behaviour trees - see the README in the Behaviour Tree folder
 
+### Scene Pack
+
+Scenes can be used as containers for arbitrary collections of gameobjects. When unpacked a scene is loaded and all its contents set to DoNotDestroyOnLoad, then the scene is unloaded. If unpacked again, a reference to the existing collection of gameobjects is returned.
+
+This workflow is similar to using singletons but allows for references to be set between game objects easily.
+
+A similar workflow could definitely be achieved using prefabs and game object ids. If it is request, I will add this in future.
+
 ### Scriptable Object Architecture
 
 See Ryan Hipple's [Talk] (https://www.youtube.com/watch?v=raQ3iHhE_Kk) on the scriptable object component architecture.
@@ -90,6 +98,10 @@ Sounds can be assigned an alias name. If multiple sounds have the same alias nam
 * Some simple noise textures for prototyping
 * A rounded rectangle for cartoonish UI
 * A fake cubemap - allows materials using the standard shader to have a certain nice effect with the right light renderer settings
+
+### Transition
+
+Offers a simple API to start transitions. Transitions can perform arbitrary actions when the screen is obscured. They can also switch scene. Call Transitions.Start. The included fade transition demonstrates the Scene Pack workflow.
 
 ### Unity Events
 

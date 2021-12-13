@@ -1,6 +1,7 @@
-MIT License
+MIT License (modified)
 
-Copyright (c) 2021 Alex Hetherington
+Original work Copyright (c) 2021 Alex Hetherington
+Shared work Copyright (c) the author (see credits)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
