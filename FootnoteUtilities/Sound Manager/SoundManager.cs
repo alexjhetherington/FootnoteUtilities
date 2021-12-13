@@ -7,6 +7,8 @@ public class SoundManager : MonoBehaviour
     private Dictionary<string, List<SoundEntry>> groupedSoundEntries = new Dictionary<string, List<SoundEntry>>();
     private GameObject prototype;
 
+    private AudioSource music;
+
     private void Init()
     {
         prototype = new GameObject("Sound Prototype");
@@ -85,6 +87,63 @@ public class SoundManager : MonoBehaviour
         return audioSource;
     }
 
+    public void PlayMusicInternal(string name, float fadeTime)
+    {
+        if(music == null)
+        {
+            var go = new GameObject("Music AudioSource");
+            DontDestroyOnLoad(go);
+            AudioSource audioSource = go.AddComponent<AudioSource>();
+            music = audioSource;
+        }
+
+        List<SoundEntry> soundEntries;
+        if (!groupedSoundEntries.TryGetValue(name, out soundEntries))
+        {
+            Debug.LogError("Sound was not found in library: " + name);
+            foreach (var entry in groupedSoundEntries.Keys)
+            {
+                Debug.Log(entry);
+            }
+            return;
+        }
+        SoundEntry soundEntry = soundEntries[0];
+
+        StartCoroutine(FadeNextMusic(soundEntry, fadeTime));
+    }
+
+    public void StopMusicInternal(float fadeTime)
+    {
+        StartCoroutine(FadeOut(music, fadeTime));
+    }
+
+    private IEnumerator FadeNextMusic(SoundEntry soundEntry, float fadeTime)
+    {
+        yield return StartCoroutine(FadeOut(music, fadeTime));
+        music.clip = soundEntry.audioClip;
+        music.loop = soundEntry.looping;
+        music.outputAudioMixerGroup = soundEntry.audioMixerGroup;
+        music.Play();
+    }
+
+    public static IEnumerator FadeOut(AudioSource audioSource, float FadeTime)
+    {
+        if (audioSource.isPlaying)
+        {
+            float startVolume = audioSource.volume;
+
+            while (audioSource.volume > 0)
+            {
+                audioSource.volume -= startVolume * Time.deltaTime / FadeTime;
+
+                yield return null;
+            }
+
+            audioSource.Stop();
+            audioSource.volume = startVolume;
+        }
+    }
+
     //===Singleton Related things=== 
 
     public static AudioSource PlaySound(AudioClip audioClip, float pitchOverride)
@@ -102,6 +161,19 @@ public class SoundManager : MonoBehaviour
     public static AudioSource PlaySound(string name, Vector3 position = new Vector3(), Transform followTarget = null, float pitchOverride = 0)
     {
         return Instance.PlaySoundInternal(name, position, followTarget, pitchOverride);
+    }
+
+    public static void PlayMusic(AudioClip audioClip, float fadeTime)
+    {
+        Instance.PlayMusicInternal(audioClip.name, fadeTime);
+    }
+    public static void PlayMusic(string name, float fadeTime)
+    {
+        Instance.PlayMusicInternal(name, fadeTime);
+    }
+    public static void StopMusic(float fadeTime)
+    {
+        Instance.StopMusicInternal(fadeTime);
     }
 
     private static SoundManager _instance;
