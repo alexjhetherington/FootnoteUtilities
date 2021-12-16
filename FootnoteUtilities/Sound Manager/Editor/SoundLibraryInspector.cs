@@ -42,10 +42,37 @@ public class SoundLibraryInspector : Editor
         {
             SerializedProperty soundEntryProperty = soundEntriesProperty.GetArrayElementAtIndex(i);
             Object audioClip = soundEntryProperty.FindPropertyRelative("audioClip").objectReferenceValue;
+            
 
-            if (!string.IsNullOrEmpty(textSearch) && audioClip != null && !audioClip.name.ToLower().Contains(textSearch.ToLower()))
+            //Skip the entry if text search is active and entry does not have relevant alias
+            if (!string.IsNullOrEmpty(textSearch) && audioClip != null)
             {
-                continue;
+                SerializedProperty aliases = soundEntryProperty.FindPropertyRelative("aliases");
+                HashSet<string> _aliases = new HashSet<string>();
+
+                if (aliases != null)
+                {
+                    for (int j = 0; j < aliases.arraySize; j++)
+                    {
+                        SerializedProperty alias = aliases.GetArrayElementAtIndex(j);
+                        _aliases.Add(alias.stringValue.ToLower());
+                    }
+                }
+
+                _aliases.Add(audioClip.name);
+                string lowerTextSearch = textSearch.ToLower();
+                
+                bool match = false;
+                foreach (string alias in _aliases)
+                {
+                    if (alias.Contains(textSearch.ToLower()))
+                    {
+                        match = true;
+                        break;
+                    }
+                }
+                if (!match)
+                    continue;
             }
 
             ShowSoundEntry(soundEntriesProperty, soundEntryProperty, i);
