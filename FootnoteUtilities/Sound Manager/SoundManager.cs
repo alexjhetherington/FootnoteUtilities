@@ -42,6 +42,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    //== Basic Controls
     public AudioSource PlaySoundInternal(AudioClip audioClip, Vector3 position, Transform followTarget, float pitchOverride) { return PlaySoundInternal(audioClip.name, position, followTarget, pitchOverride);  }
     public AudioSource PlaySoundInternal(string name, Vector3 position, Transform followTarget, float pitchOverride) {
         List<SoundEntry> soundEntries;
@@ -71,6 +72,7 @@ public class SoundManager : MonoBehaviour
         audioSource.volume = soundEntry.volume;
         audioSource.loop = soundEntry.looping;
         audioSource.spatialBlend = soundEntry.spatialBlend;
+        audioSource.panStereo = 0;
         audioSource.outputAudioMixerGroup = soundEntry.audioMixerGroup;
 
         if (soundEntry.pitchVariation != 0)
@@ -114,19 +116,33 @@ public class SoundManager : MonoBehaviour
 
     public void StopMusicInternal(float fadeTime)
     {
-        StartCoroutine(FadeOut(music, fadeTime));
+        StartCoroutine(FadeOut_ManualCoroutine(music, fadeTime));
     }
 
     private IEnumerator FadeNextMusic(SoundEntry soundEntry, float fadeTime)
     {
-        yield return StartCoroutine(FadeOut(music, fadeTime));
+        yield return StartCoroutine(FadeOut_ManualCoroutine(music, fadeTime));
         music.clip = soundEntry.audioClip;
         music.loop = soundEntry.looping;
         music.outputAudioMixerGroup = soundEntry.audioMixerGroup;
         music.Play();
     }
 
-    public static IEnumerator FadeOut(AudioSource audioSource, float FadeTime)
+    //== Fading in and out - with handling of halting halfway through
+    private static Dictionary<AudioSource, Coroutine> fadingAudioSources = new Dictionary<AudioSource, Coroutine>();
+
+    public static void FadeOut(AudioSource audioSource, float fadeTime)
+    {
+        CancelExistingFade(audioSource);
+        fadingAudioSources.Add(audioSource, Coroutiner.Instance.StartCoroutine(_FadeOut(audioSource, fadeTime)));
+    }
+    //Useful if you want to do something after the sound fades out - but will not be halted if you try to fade it in again!
+    public static IEnumerator FadeOut_ManualCoroutine(AudioSource audioSource, float fadeTime)
+    {
+        CancelExistingFade(audioSource);
+        return _FadeOut(audioSource, fadeTime);
+    }
+    private static IEnumerator _FadeOut(AudioSource audioSource, float FadeTime)
     {
         if (audioSource.isPlaying)
         {
@@ -134,13 +150,60 @@ public class SoundManager : MonoBehaviour
 
             while (audioSource.volume > 0)
             {
-                audioSource.volume -= startVolume * Time.deltaTime / FadeTime;
+                audioSource.volume -= Time.deltaTime / FadeTime;
 
                 yield return null;
             }
 
             audioSource.Stop();
             audioSource.volume = startVolume;
+        }
+    }
+
+    public static void FadeIn(AudioSource audioSource, float fadeTime)
+    {
+        CancelExistingFade(audioSource);
+        fadingAudioSources.Add(audioSource, Coroutiner.Instance.StartCoroutine(_FadeIn(audioSource, fadeTime)));
+    }
+    private static IEnumerator _FadeIn(AudioSource audioSource, float FadeTime)
+    {
+        float targetVol = audioSource.volume;
+        audioSource.volume = 0;
+
+        audioSource.Stop();
+        audioSource.Play();
+        
+        while (audioSource.volume < targetVol)
+        {
+            audioSource.volume = Mathf.Min(targetVol, audioSource.volume + Time.deltaTime / FadeTime) ;
+
+            yield return null;
+        }
+    }
+
+    public static void FadeTo(AudioSource audioSource, float targetVolume, float speed)
+    {
+        CancelExistingFade(audioSource);
+        fadingAudioSources.Add(audioSource, Coroutiner.Instance.StartCoroutine(_FadeTo(audioSource, targetVolume, speed)));
+    }
+    private static IEnumerator _FadeTo(AudioSource audioSource, float targetVolume, float speed)
+    {
+        while (audioSource.volume != targetVolume)
+        {
+            audioSource.volume = Mathf.MoveTowards(audioSource.volume, targetVolume, speed * Time.deltaTime);
+
+            yield return null;
+        }
+    }
+
+    private static void CancelExistingFade(AudioSource audioSource)
+    {
+        if (fadingAudioSources.ContainsKey(audioSource))
+        {
+            if(fadingAudioSources[audioSource] != null)
+                Coroutiner.Instance.StopCoroutine(fadingAudioSources[audioSource]);
+
+            fadingAudioSources.Remove(audioSource);
         }
     }
 
