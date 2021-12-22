@@ -104,6 +104,10 @@ Sounds can be assigned an alias name. If multiple sounds have the same alias nam
 
 Offers a simple API to start transitions. Transitions can perform arbitrary actions when the screen is obscured. They can also switch scene. Call Transitions.Start. The included fade transition demonstrates the Scene Pack workflow.
 
+### UI
+
+Make an instance of the UiSettings scriptable object. It allows you to create menus using code. Use AnchorUtil to set relative positions.
+
 ### Unity Events
 
 Generic classes cannot be serialised, but extending classes that define the generic type can.
