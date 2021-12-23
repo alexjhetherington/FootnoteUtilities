@@ -2,21 +2,17 @@
 using UnityEditor;
 using UnityEngine;
 
-[CanEditMultipleObjects]
-[CustomEditor(typeof(Object), true)]
-public class ButtonAttributeInspectors : UnityEditor.Editor
+public partial class ObjectInspector : UnityEditor.Editor
 {
-    MethodInfo[] Methods => target.GetType()
-        .GetMethods(BindingFlags.Instance |
-                    BindingFlags.Static |
-                    BindingFlags.NonPublic |
-                    BindingFlags.Public);
-
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        DrawMethods();
-    }
+    MethodInfo[] Methods =>
+        target
+            .GetType()
+            .GetMethods(
+                BindingFlags.Instance
+                    | BindingFlags.Static
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Public
+            );
 
     void DrawMethods()
     {
@@ -25,8 +21,9 @@ public class ButtonAttributeInspectors : UnityEditor.Editor
 
         foreach (var method in Methods)
         {
-            var buttonAttribute = (ButtonAttribute) method
-                .GetCustomAttribute(typeof(ButtonAttribute));
+            var buttonAttribute = (ButtonAttribute)method.GetCustomAttribute(
+                typeof(ButtonAttribute)
+            );
 
             if (buttonAttribute != null)
                 DrawButton(buttonAttribute, method);

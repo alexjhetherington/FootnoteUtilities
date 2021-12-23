@@ -3,9 +3,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-[CanEditMultipleObjects]
-[CustomEditor(typeof(MonoBehaviour), true)]
-public class ResolveAttributeInspector : UnityEditor.Editor
+public partial class ObjectInspector : UnityEditor.Editor
 {
     FieldInfo[] _resolveableFields;
     FieldInfo[] ResolvableFields
@@ -16,17 +14,21 @@ public class ResolveAttributeInspector : UnityEditor.Editor
             {
                 List<FieldInfo> allFields = new List<FieldInfo>();
 
-                List<FieldInfo> nonPublicFields = new List<FieldInfo>(target.GetType()
-                                            .GetFields(BindingFlags.Instance |
-                                                        BindingFlags.NonPublic));
+                List<FieldInfo> nonPublicFields = new List<FieldInfo>(
+                    target.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+                );
 
-                List<FieldInfo> publicFields = new List<FieldInfo>(target.GetType()
-                                            .GetFields(BindingFlags.Instance |
-                                                        BindingFlags.Public));
+                List<FieldInfo> publicFields = new List<FieldInfo>(
+                    target.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public)
+                );
 
                 foreach (FieldInfo nonPublicField in nonPublicFields)
                 {
-                    if (hasAttr(nonPublicField) && isVisible(nonPublicField) && isType(nonPublicField))
+                    if (
+                        hasAttr(nonPublicField)
+                        && isVisible(nonPublicField)
+                        && isType(nonPublicField)
+                    )
                         allFields.Add(nonPublicField);
                 }
 
@@ -58,12 +60,6 @@ public class ResolveAttributeInspector : UnityEditor.Editor
             || typeof(Object).IsAssignableFrom(field.FieldType.GetElementType());
     }
 
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        DrawResolveButton();
-    }
-
     void DrawResolveButton()
     {
         if (ResolvableFields.Length < 1)
@@ -84,12 +80,13 @@ public class ResolveAttributeInspector : UnityEditor.Editor
                 {
                     fieldInfo.SetValue(mb, mb.GetComponentInChildren(fieldInfo.FieldType));
                 }
-
-
                 else if (fieldInfo.FieldType.IsArray)
                 {
                     var comps = mb.GetComponentsInChildren(fieldInfo.FieldType.GetElementType());
-                    var correctlyTypedArray = System.Array.CreateInstance(fieldInfo.FieldType.GetElementType(), comps.Length);
+                    var correctlyTypedArray = System.Array.CreateInstance(
+                        fieldInfo.FieldType.GetElementType(),
+                        comps.Length
+                    );
                     comps.CopyTo(correctlyTypedArray, 0);
 
                     fieldInfo.SetValue(mb, correctlyTypedArray);
@@ -121,7 +118,6 @@ public class ResolveAttributeInspector : UnityEditor.Editor
                 {
                     fieldInfo.SetValue(mb, correctlyTypedArray.GetValue(0));
                 }
-
                 else if (fieldInfo.FieldType.IsArray)
                 {
                     fieldInfo.SetValue(mb, correctlyTypedArray);

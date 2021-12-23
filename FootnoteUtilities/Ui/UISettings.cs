@@ -85,16 +85,16 @@ public class UISettings : ScriptableObject
         if (EventSystem.current == null)
         {
             GameObject eventGo = new GameObject(
-                "Event System",
+                "FootnotesUi Event System",
                 typeof(EventSystem),
                 typeof(StandaloneInputModule)
             );
         }
 
-        GameObject rootGo = new GameObject("Ui Root", typeof(RectTransform));
+        GameObject rootGo = new GameObject("FootnotesUi Root", typeof(RectTransform));
         rootGo.layer = LayerMask.NameToLayer("UI");
 
-        GameObject camGo = new GameObject("Ui Camera");
+        GameObject camGo = new GameObject("FootnotesUi Camera");
         Camera cam = camGo.AddComponent<Camera>();
         Canvas canvas = rootGo.AddComponent<Canvas>();
         GraphicRaycaster raycaster = rootGo.AddComponent<GraphicRaycaster>();
@@ -355,5 +355,40 @@ public class UISettings : ScriptableObject
         RectTransform rt = uiGo.GetComponent<RectTransform>();
         rt.AddChildren(children);
         return rt;
+    }
+
+    /* Functions as a quick start guide, and allows you to create a UI in the editor to see what it looks like */
+    /* This framework was initially designed for UIs that are created at runtime and destroyed on scene change*/
+    /* If you want similar behaviour for your real UI (not just the below test UI), make a similar method in your own class */
+    /* This is code generated UI after all! The scriptable object is just here to store settings */
+    [Button]
+    private void CreateTestUi()
+    {
+        //In normal usage, handle the lifecycle yourself (or just let them be destroyed/created on scene load)
+        DestroyImmediate(GameObject.Find("FootnotesUi Camera"));
+        DestroyImmediate(GameObject.Find("FootnotesUi Root"));
+        DestroyImmediate(GameObject.Find("FootnotesUi Event System"));
+
+        //Put a method like this in your own class
+        var ui = this.MakeUi(AnchorUtil.BottomLeft(40, 40))
+            .AddChildren(
+                this.Title("Title"),
+                this.Text("This is main line 1"),
+                this.Nest()
+                    .AddChildren(
+                        this.Text("This is nested line 1"),
+                        this.Text("This is nested line 2")
+                    ),
+                this.Text("This is main line 2"),
+                this.Button("Button", () => Debug.Log("Button Pressed")),
+                this.Toggle("Toggle", b => Debug.Log(b), out var act),
+                this.Slider("Slider", 0, 1, false, f => Debug.Log(f), out var act2)
+            );
+
+        act.Invoke(true); //Set toggle state
+        act2.Invoke(0.5f); //Set slider state
+
+        //This is not required in play mode :)
+        LayoutRebuilder.ForceRebuildLayoutImmediate(ui);
     }
 }

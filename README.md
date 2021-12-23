@@ -24,7 +24,7 @@ This is an incomplete guide to the contents of Footnote Utilities, highlighting 
 
 ### Attributes
 
-* Add the [Button] attribute to a method on a Monobehaviour to expose a button in the inspector
+* Add the [Button] attribute to a method on a Monobehaviour to expose a button in the inspector. Due to the general nature of this attribute I have not implemented undo. Be careful using this at editor time!
 * Add the [Resolve] attribute to a public or serialised field to expose automatic resolution buttons in the inspector. N.B. Arrays will always be overriden, but single references will only be resolved if they are null. Existing single references will not be re-resolved)
 
 ### Data Structures
