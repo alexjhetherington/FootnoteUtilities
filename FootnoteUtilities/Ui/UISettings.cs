@@ -142,7 +142,11 @@ public class UISettings : ScriptableObject
         return title;
     }
 
-    public RectTransform Text(string text, Color? color = null, TextAlignmentOptions? overrideAlignment = null)
+    public RectTransform Text(
+        string text,
+        Color? color = null,
+        TextAlignmentOptions? overrideAlignment = null
+    )
     {
         var normal = UiGo("Text");
         var textMesh = normal.AddComponent<TextMeshProUGUI>();
@@ -166,14 +170,19 @@ public class UISettings : ScriptableObject
         return Button(text, null, null, action);
     }
 
-    public RectTransform Button(string text, Color? overrideColor, Sprite overrideSprite, UnityAction action)
+    public RectTransform Button(
+        string text,
+        Color? overrideColor,
+        Sprite overrideSprite,
+        UnityAction action
+    )
     {
         var container = UiGo("Button Layout Container");
 
         var button = UiGo("Button");
         var image = button.AddComponent<Image>();
 
-        if(overrideSprite != null)
+        if (overrideSprite != null)
         {
             image.sprite = overrideSprite;
         }
@@ -207,7 +216,7 @@ public class UISettings : ScriptableObject
         layout.padding.right = buttonPadding;
         layout.padding.bottom = buttonPadding;
 
-        if(overrideButtonSize != default)
+        if (overrideButtonSize != default)
         {
             var layoutElement = button.AddComponent<LayoutElement>();
             layoutElement.preferredHeight = overrideButtonSize.y;
@@ -429,7 +438,8 @@ public class UISettings : ScriptableObject
                                 this.Button("Button", () => Debug.Log("Button Pressed")),
                                 this.Toggle("Toggle", b => Debug.Log(b), out var act2),
                                 this.Slider("Slider", 0, 1, false, f => Debug.Log(f), out var act3)
-                    )),
+                            )
+                    ),
                 this.Text("This is main line 2"),
                 this.Button("Button", () => Debug.Log("Button Pressed")),
                 this.Toggle("Toggle", b => Debug.Log(b), out var act4),
