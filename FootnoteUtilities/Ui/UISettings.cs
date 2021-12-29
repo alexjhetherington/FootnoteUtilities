@@ -45,6 +45,8 @@ public class UISettings : ScriptableObject
     private int padding = 20;
     [SerializeField]
     private int verticalSpacing = 4;
+    [SerializeField]
+    private int minTextWidgetDistance = 20;
 
     [Header("Buttons")]
     [SerializeField]
@@ -257,6 +259,11 @@ public class UISettings : ScriptableObject
         var txt = Text(text, null, TextAlignmentOptions.MidlineLeft);
         toggle.AddChildren(txt);
 
+        var textComponent = txt.GetComponent<TextMeshProUGUI>();
+        var preferredSize = toggle.AddComponent<LayoutElement>();
+        preferredSize.minWidth =
+            textComponent.preferredWidth + toggleSize.x + minTextWidgetDistance;
+
         var backgroundGo = UiGo("Background");
         var backgroundImage = backgroundGo.AddComponent<Image>();
         backgroundGo.SetAnchorPos(AnchorUtil.CentreRight(0));
@@ -316,6 +323,11 @@ public class UISettings : ScriptableObject
         var bk = UiGo("Background");
         var fill = UiGo("Fill");
         var handle = UiGo("Handle");
+
+        var textComponent = topLevel.GetComponent<TextMeshProUGUI>();
+        var preferredSize = topLevel.AddComponent<LayoutElement>();
+        preferredSize.minWidth =
+            textComponent.preferredWidth + sliderSize.x + minTextWidgetDistance;
 
         topLevel.AddChildren(bk);
         bk.AddChildren(fill, handle);
@@ -433,7 +445,7 @@ public class UISettings : ScriptableObject
                         this.Text("This is nested line 2"),
                         this.Nest()
                             .AddChildren(
-                                this.Text("This is dobule nested line 1"),
+                                this.Text("This is double nested line 1"),
                                 this.Text("This is double nested line 2"),
                                 this.Button("Button", () => Debug.Log("Button Pressed")),
                                 this.Toggle("Toggle", b => Debug.Log(b), out var act2),
