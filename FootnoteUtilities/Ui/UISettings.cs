@@ -237,7 +237,7 @@ public class UISettings : ScriptableObject
 
         container.AddChildren(button);
         var containerLayout = container.AddComponent<HorizontalLayoutGroup>();
-        containerLayout.childControlHeight = false;
+        containerLayout.childControlHeight = true;
         containerLayout.childControlWidth = false;
         containerLayout.childAlignment = buttonAlignment;
 
