@@ -51,6 +51,8 @@ public class UISettings : ScriptableObject
     private Sprite buttonSprite;
     [SerializeField]
     private int buttonPadding = 4;
+    [SerializeField]
+    private Vector2 overrideButtonSize = default;
 
     [Header("Toggles")]
     [SerializeField]
@@ -178,10 +180,22 @@ public class UISettings : ScriptableObject
         layout.padding.right = buttonPadding;
         layout.padding.bottom = buttonPadding;
 
+        if(overrideButtonSize != default)
+        {
+            var layoutElement = button.AddComponent<LayoutElement>();
+            layoutElement.preferredHeight = overrideButtonSize.y;
+            layoutElement.preferredWidth = overrideButtonSize.x;
+        }
+
         b.onClick.AddListener(action);
 
         button.AddChildren(Text(text, buttonForeground));
         button.AddPreferredSizing();
+
+        var textComp = button.GetComponentInChildren<TextMeshProUGUI>();
+        textComp.horizontalAlignment = HorizontalAlignmentOptions.Center;
+        textComp.verticalAlignment = VerticalAlignmentOptions.Middle;
+        textComp.enableWordWrapping = false;
 
         container.AddChildren(button);
         var containerLayout = container.AddComponent<HorizontalLayoutGroup>();
