@@ -9,6 +9,9 @@ using UnityEngine.UI;
 using static AnchorUtil;
 using static UnityEngine.UI.Slider;
 
+/* Helpful things still to be added:
+    * Stop the UI from going off screen (scrollbar!)
+    * Manually adding line breaks */
 [CreateAssetMenu()]
 public class UISettings : ScriptableObject
 {
