@@ -12,6 +12,8 @@ using static UnityEngine.UI.Slider;
 [CreateAssetMenu()]
 public class UISettings : ScriptableObject
 {
+    private static Color buttonAdjust = new Color(0.1f, 0.1f, 0.1f, 0f);
+
     [Header("Title Text")]
     [SerializeField]
     private TMP_FontAsset titleFont;
@@ -148,7 +150,6 @@ public class UISettings : ScriptableObject
         return normal;
     }
 
-    private static Color buttonAdjust = new Color(0.1f, 0.1f, 0.1f, 1f);
     public RectTransform Button(string text, UnityAction action)
     {
         var container = UiGo("Button Layout Container");
