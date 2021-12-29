@@ -154,12 +154,21 @@ public class UISettings : ScriptableObject
 
     public RectTransform Button(string text, UnityAction action)
     {
+        return Button(text, null, null, action);
+    }
+
+    public RectTransform Button(string text, Color? overrideColor, Sprite overrideSprite, UnityAction action)
+    {
         var container = UiGo("Button Layout Container");
 
         var button = UiGo("Button");
         var image = button.AddComponent<Image>();
 
-        if (buttonSprite != null)
+        if(overrideSprite != null)
+        {
+            image.sprite = overrideSprite;
+        }
+        else if (buttonSprite != null)
         {
             image.sprite = buttonSprite;
         }
@@ -167,9 +176,18 @@ public class UISettings : ScriptableObject
         var b = button.AddComponent<Button>();
         b.targetGraphic = image;
         var colours = b.colors;
-        colours.normalColor = buttonBackground;
-        colours.highlightedColor = buttonBackground + buttonAdjust;
-        colours.pressedColor = buttonBackground;
+        if (overrideColor.HasValue)
+        {
+            colours.normalColor = overrideColor.Value;
+            colours.highlightedColor = overrideColor.Value + buttonAdjust;
+            colours.pressedColor = overrideColor.Value;
+        }
+        else
+        {
+            colours.normalColor = buttonBackground;
+            colours.highlightedColor = buttonBackground + buttonAdjust;
+            colours.pressedColor = buttonBackground;
+        }
         b.colors = colours;
 
         var layout = button.AddComponent<VerticalLayoutGroup>();
@@ -375,7 +393,7 @@ public class UISettings : ScriptableObject
     /* Functions as a quick start guide, and allows you to create a UI in the editor to see what it looks like */
     /* This framework was initially designed for UIs that are created at runtime and destroyed on scene change*/
     /* If you want similar behaviour for your real UI (not just the below test UI), make a similar method in your own class */
-    /* This is code generated UI after all! The scriptable object is just here to store settings */
+    /* Note: Actions are not persisted into play mode if the UI was created in editor mode! */
     [Button]
     private void CreateTestUi()
     {
