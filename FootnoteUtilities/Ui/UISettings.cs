@@ -16,6 +16,8 @@ public class UISettings : ScriptableObject
 
     [Header("Title Text")]
     [SerializeField]
+    private TextAlignmentOptions titleAlignment;
+    [SerializeField]
     private TMP_FontAsset titleFont;
     [SerializeField]
     private Color titleForeground = Color.white;
@@ -25,6 +27,8 @@ public class UISettings : ScriptableObject
     private float titleBottomMargin = 8;
 
     [Header("Other Text")]
+    [SerializeField]
+    private TextAlignmentOptions textAligntment;
     [SerializeField]
     private TMP_FontAsset textFont;
     [SerializeField]
@@ -43,6 +47,8 @@ public class UISettings : ScriptableObject
     private int verticalSpacing = 4;
 
     [Header("Buttons")]
+    [SerializeField]
+    private TextAnchor buttonAlignment;
     [SerializeField]
     private Color buttonBackground = Color.white - buttonAdjust;
     [SerializeField]
@@ -125,6 +131,7 @@ public class UISettings : ScriptableObject
         textMesh.color = titleForeground;
         textMesh.fontSize = titleSize;
         textMesh.margin = new Vector4(0, 0, 0, titleBottomMargin);
+        textMesh.alignment = titleAlignment;
 
         if (titleFont != null)
         {
@@ -135,13 +142,15 @@ public class UISettings : ScriptableObject
         return title;
     }
 
-    public RectTransform Text(string text, Color? color = null)
+    public RectTransform Text(string text, Color? color = null, TextAlignmentOptions? overrideAlignment = null)
     {
         var normal = UiGo("Text");
         var textMesh = normal.AddComponent<TextMeshProUGUI>();
         textMesh.text = text;
         textMesh.color = color.GetValueOrDefault(textForeground);
         textMesh.fontSize = textSize;
+
+        textMesh.alignment = overrideAlignment.GetValueOrDefault(textAligntment);
 
         if (textFont != null)
         {
@@ -219,6 +228,8 @@ public class UISettings : ScriptableObject
         var containerLayout = container.AddComponent<HorizontalLayoutGroup>();
         containerLayout.childControlHeight = false;
         containerLayout.childControlWidth = false;
+        containerLayout.childAlignment = buttonAlignment;
+
         return container;
     }
 
@@ -234,7 +245,7 @@ public class UISettings : ScriptableObject
         layout.childControlWidth = true;
         toggle.SetAnchorPos(AnchorUtil.TopHorizontalStretch());
 
-        var txt = Text(text);
+        var txt = Text(text, null, TextAlignmentOptions.MidlineLeft);
         toggle.AddChildren(txt);
 
         var backgroundGo = UiGo("Background");
@@ -291,7 +302,7 @@ public class UISettings : ScriptableObject
         out UnityAction<float> changeValue
     )
     {
-        var topLevel = Text(text);
+        var topLevel = Text(text, null, TextAlignmentOptions.MidlineLeft);
         topLevel.gameObject.name = "Slider";
         var bk = UiGo("Background");
         var fill = UiGo("Fill");
@@ -410,16 +421,23 @@ public class UISettings : ScriptableObject
                 this.Nest()
                     .AddChildren(
                         this.Text("This is nested line 1"),
-                        this.Text("This is nested line 2")
-                    ),
+                        this.Text("This is nested line 2"),
+                        this.Nest()
+                            .AddChildren(
+                                this.Text("This is dobule nested line 1"),
+                                this.Text("This is double nested line 2"),
+                                this.Button("Button", () => Debug.Log("Button Pressed")),
+                                this.Toggle("Toggle", b => Debug.Log(b), out var act2),
+                                this.Slider("Slider", 0, 1, false, f => Debug.Log(f), out var act3)
+                    )),
                 this.Text("This is main line 2"),
                 this.Button("Button", () => Debug.Log("Button Pressed")),
-                this.Toggle("Toggle", b => Debug.Log(b), out var act),
-                this.Slider("Slider", 0, 1, false, f => Debug.Log(f), out var act2)
+                this.Toggle("Toggle", b => Debug.Log(b), out var act4),
+                this.Slider("Slider", 0, 1, false, f => Debug.Log(f), out var act5)
             );
 
-        act.Invoke(true); //Set toggle state
-        act2.Invoke(0.5f); //Set slider state
+        act2.Invoke(true); //Set toggle state
+        act3.Invoke(0.5f); //Set slider state
 
         //This is not required in play mode :)
         LayoutRebuilder.ForceRebuildLayoutImmediate(ui);
