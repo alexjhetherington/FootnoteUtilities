@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 716ff468559913845aa33e4d6902911e, type: 3}
+  m_Name: UI Settings
+  m_EditorClassIdentifier: 
+  titleAlignment: 4097
+  titleFont: {fileID: 0}
+  titleForeground: {r: 1, g: 1, b: 1, a: 1}
+  titleSize: 32
+  titleBottomMargin: 8
+  textAligntment: 4097
+  textFont: {fileID: 0}
+  textForeground: {r: 1, g: 1, b: 1, a: 1}
+  textSize: 24
+  panelBackground: {r: 0, g: 0, b: 0, a: 1}
+  panelSprite: {fileID: 0}
+  padding: 20
+  verticalSpacing: 4
+  minTextWidgetDistance: 20
+  buttonAlignment: 0
+  buttonBackground: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+  buttonForeground: {r: 0, g: 0, b: 0, a: 1}
+  buttonSprite: {fileID: 0}
+  buttonPadding: 4
+  overrideButtonSize: {x: 0, y: 0}
+  toggleSize: {x: 20, y: 20}
+  toggleSprite: {fileID: 0}
+  toggleBackground: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  checkmarkSprite: {fileID: 0}
+  checkMarkColor: {r: 0, g: 1, b: 0, a: 1}
+  sliderBackground: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  sliderSprite: {fileID: 0}
+  sliderFill: {r: 0, g: 1, b: 0, a: 1}
+  sliderFillSprite: {fileID: 0}
+  sliderHandle: {r: 1, g: 1, b: 1, a: 1}
+  sliderHandleSprite: {fileID: 0}
+  sliderSize: {x: 100, y: 15}
+  sliderHandleSize: {x: 15, y: 15}

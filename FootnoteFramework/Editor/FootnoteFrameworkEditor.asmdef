@@ -1,0 +1,17 @@
+{
+    "name": "FootnoteFrameworkEditor",
+    "references": [
+        "GUID:ba3064486f3af3c4ca701129e6876089"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

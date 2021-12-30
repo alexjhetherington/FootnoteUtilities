@@ -4,12 +4,12 @@ using UnityEngine;
 
 public static class FootnoteUnits
 {
-    private static float linearToDecibels(float linear)
+    public static float linearToDecibels(float linear)
     {
         linear = Mathf.Clamp(linear, 0.0001f, 10f);
         return 20f * Mathf.Log10(linear);
     }
-    private static float decibelsToLinear(float decibels)
+    public static float decibelsToLinear(float decibels)
     {
         decibels = Mathf.Clamp(decibels, -80f, 20f);
         return Mathf.Pow(10f, decibels / 20f);

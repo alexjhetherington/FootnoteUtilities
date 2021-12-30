@@ -19,7 +19,7 @@ public class UISettings : ScriptableObject
 
     [Header("Title Text")]
     [SerializeField]
-    private TextAlignmentOptions titleAlignment;
+    private TextAlignmentOptions titleAlignment = TextAlignmentOptions.MidlineLeft;
     [SerializeField]
     private TMP_FontAsset titleFont;
     [SerializeField]
@@ -31,7 +31,7 @@ public class UISettings : ScriptableObject
 
     [Header("Other Text")]
     [SerializeField]
-    private TextAlignmentOptions textAligntment;
+    private TextAlignmentOptions textAligntment = TextAlignmentOptions.MidlineLeft;
     [SerializeField]
     private TMP_FontAsset textFont;
     [SerializeField]
@@ -423,6 +423,12 @@ public class UISettings : ScriptableObject
         RectTransform rt = uiGo.GetComponent<RectTransform>();
         rt.AddChildren(children);
         return rt;
+    }
+
+    public static void DestroyUi(RectTransform ui)
+    {
+        Destroy(ui.parent.GetComponent<Canvas>().worldCamera.gameObject);
+        Destroy(ui.parent.gameObject);
     }
 
     /* Functions as a quick start guide, and allows you to create a UI in the editor to see what it looks like */

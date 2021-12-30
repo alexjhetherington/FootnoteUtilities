@@ -4,21 +4,29 @@
 
 **My Website**: http://www.footnotesforthefuture.com/
 
-**How to install**: Copy the FootnoteUtilities folder to your Unity project
+**How to install**: Copy the root folder to Assets/Plugins
 
-Footnote Utilities is a collection of useful and commonly used textures, shaders, scripts, and frameworks for Unity to stop us from writing them over and over again.
+This repo contains 2 related projects. The main project is called Footnote Utilities. The secondary project is called Footnote Framework.
 
-There is a wide variety of stuff in here. We wrote most of it; some of it was written by others and modified by us.
+In general, the repo stores common unity assets so we can focus on the novel aspects of projects we build. See the bottom of the readme for other recommended libraries.
 
-The guiding principle here is that everything should be very lightweight. This means small readable classes, and rely on 'The Unity Way' as much as humanly possible.
+#### Footnote Utilities
 
-Components should rely on each other as little as possible, but in some cases this cannot be avoided.
+Footnote Utilities contains a variety of non-specific assets including textures, shaders and scripts. See the later section for a more in depth summary of the contents.
 
-Some assets contained are fully featured. Some are lightweight (but powerful!) alternatives to more fully featured alternatives that exist elsewhere.
+Footnote Utilities are mostly written by us. Some utilities have been written by others; some of those have been modified explicitly by us and some of them remain mostly untouched. 
 
-We do not have our own solution for some complicated assets that we use very commonly, like tweening libraries. See the section below that offers suggestions for those.
+Each Footnote Utility should be simple and work (mostly) on its own - so one can pick and choose exactly which parts to use in their project. We focus on code-based solutions and try to do things the 'Unity Way' as much as possible.
 
-## Contents
+#### Footnote Framework
+
+Footwork Framework is a base project that uses some Footnote Utilities. It is inside a hidden folder. Go to Tools -> Footnote Framework to generate it. This will copy the hidden folder to the Assets folder. It will require importing TextMeshPro essentials also.
+
+Footwork Framework is more opinionated and may not be suitable for all projects. Even then - it is expected that the imported assets are modified for your specific project. There is no way to create a generic main menu, and it is simpler to just modify one script rather than get lost in abstraction and extension (this is why we copy the base project - the files are now 'yours').
+
+Footwork Framework is still under construction and I would call it very experimental.
+
+## Contents of Footnote Utilities 
 
 This is an incomplete guide to the contents of Footnote Utilities, highlighting important and interesting features.
 
@@ -119,11 +127,11 @@ Generic classes cannot be serialised, but extending classes that define the gene
 
 ## Other Libraries we like
 
-* Level Design: [RealtimeCsg] (https://github.com/LogicalError/realtime-CSG-for-unity/)
+* Level Design: [RealtimeCsg](https://github.com/LogicalError/realtime-CSG-for-unity/)
 * Tweening: [ZestKit](https://github.com/prime31/ZestKit)
-* Screen Transitions: [TransitionKit] (https://github.com/prime31/TransitionKit)
+* Screen Transitions: [TransitionKit](https://github.com/prime31/TransitionKit)
 
-Easy and Unity style dependency injection: [Medicine] (https://github.com/apkd/Medicine)
+Easy and Unity style dependency injection: [Medicine](https://github.com/apkd/Medicine)
 
 ## Attribution
 
