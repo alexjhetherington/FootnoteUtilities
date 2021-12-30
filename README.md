@@ -129,7 +129,6 @@ Generic classes cannot be serialised, but extending classes that define the gene
 
 * Level Design: [RealtimeCsg](https://github.com/LogicalError/realtime-CSG-for-unity/)
 * Tweening: [ZestKit](https://github.com/prime31/ZestKit)
-* Screen Transitions: [TransitionKit](https://github.com/prime31/TransitionKit)
 * Easy and Unity style dependency injection: [Medicine](https://github.com/apkd/Medicine)
 
 ## Attribution
