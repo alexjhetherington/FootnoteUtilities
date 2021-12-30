@@ -81,7 +81,7 @@ A similar workflow could definitely be achieved using prefabs and game object id
 
 ### Scriptable Object Architecture
 
-See Ryan Hipple's [Talk] (https://www.youtube.com/watch?v=raQ3iHhE_Kk) on the scriptable object component architecture.
+See Ryan Hipple's [Talk](https://www.youtube.com/watch?v=raQ3iHhE_Kk) on the scriptable object component architecture.
 
 In summary, this implementation offers:
 
