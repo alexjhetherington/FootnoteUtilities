@@ -1,36 +1,43 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class FootnoteFramework : EditorWindow
+public class FootnoteFramework
 {
-    [MenuItem("Tools/Footnote Framework")]
-    public static void ShowWindow()
+    [MenuItem("Tools/Generate Footnote Framework")]
+    static void GenerateFramework()
     {
-        EditorWindow.GetWindow(typeof(FootnoteFramework));
-    }
+        var frameworkPluginPath =
+            Application.dataPath + "/Plugins/FootnoteUtilities/FootnoteFramework";
 
-    void OnGUI()
-    {
-        if (GUILayout.Button("Generate Framework"))
+        if (!Directory.Exists(frameworkPluginPath))
         {
-            var frameworkPluginPath =
-                Application.dataPath + "/Plugins/FootnoteUtilities/FootnoteFramework";
-            if (!Directory.Exists(frameworkPluginPath))
-            {
-                Debug.LogError(
-                    frameworkPluginPath
-                        + " not found. Please make sure to install the plugin the correct location."
-                        + "If you prefer to install it in a different location, submit a Pull Request for handling this error!"
-                );
-                return;
-            }
-
-            CopyPrototypes(frameworkPluginPath + "/.Prototype/", Application.dataPath + "/");
-            AssetDatabase.Refresh();
+            Debug.LogError(
+                frameworkPluginPath
+                    + " not found. Please make sure to install the plugin the correct location."
+                    + "If you prefer to install it in a different location, submit a Pull Request for handling this error!"
+            );
+            return;
         }
+
+        CopyPrototypes(frameworkPluginPath + "/.Prototype/", Application.dataPath + "/");
+        AssetDatabase.Refresh();
+
+        List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>();
+        var utilitiesPluginPath = "Assets/Plugins/FootnoteUtilities/FootnoteUtilities";
+        scenes.Add(
+            new EditorBuildSettingsScene(
+                utilitiesPluginPath + "/Transition/Transitions/ScenePacks/SimpleFade.unity",
+                true
+            )
+        );
+        scenes.Add(new EditorBuildSettingsScene("Assets/Scenes/MainMenu.unity", true));
+        scenes.Add(new EditorBuildSettingsScene("Assets/Scenes/Game.unity", true));
+
+        EditorBuildSettings.scenes = scenes.ToArray();
     }
 
     static void CopyPrototypes(string sourceDir, string targetDir)

@@ -19,6 +19,8 @@ public class Menus : MonoBehaviour
     [SerializeField]
     private UISettings uiSettings;
 
+    private List<RectTransform> currentUis = new List<RectTransform>();
+
     public void Start()
     {
         if (fxMixer != null)
@@ -28,6 +30,16 @@ public class Menus : MonoBehaviour
             LoadVolume(musicMixer, musicVolParam, f => { }); //Doesn't work in Awake
     }
 
+    public void ClearMenus()
+    {
+        foreach (RectTransform ui in currentUis)
+        {
+            UISettings.DestroyUi(ui);
+        }
+
+        currentUis.Clear();
+    }
+
     public void MainMenu()
     {
         //TODO - Change the main menu!
@@ -35,13 +47,33 @@ public class Menus : MonoBehaviour
             .MakeUi(AnchorUtil.BottomLeft(40, 40))
             .AddChildren(
                 uiSettings.Title("Game Name"),
-                uiSettings.Button(
-                    "Play",
-                    () => Debug.LogWarning("This button doesn't do anything yet!")
-                ),
+                uiSettings.Button("Play", () => Transitions.Start("SimpleFade", "Game")),
                 uiSettings.Button("Options", () => OptionsMenu(() => { })),
                 uiSettings.Button("Quit", () => Application.Quit())
             );
+
+        currentUis.Add(ui);
+    }
+
+    public void PauseMenu(Pause pause)
+    {
+        var ui = uiSettings
+            .MakeUi(AnchorUtil.BottomLeft(40, 40))
+            .AddChildren(
+                uiSettings.Title("Paused"),
+                uiSettings.Button("Resume", () => pause.Unpause()),
+                uiSettings.Button("Options", () => OptionsMenu(() => { })),
+                uiSettings.Button(
+                    "Return to Menu",
+                    () =>
+                    {
+                        Time.timeScale = 1;
+                        Transitions.Start("SimpleFade", "MainMenu");
+                    }
+                )
+            );
+
+        currentUis.Add(ui);
     }
 
     public void OptionsMenu(Action onClose)
@@ -89,11 +121,14 @@ public class Menus : MonoBehaviour
                 "Back",
                 () =>
                 {
+                    currentUis.Remove(ui);
                     UISettings.DestroyUi(ui);
                     onClose.Invoke();
                 }
             )
         );
+
+        currentUis.Add(ui);
     }
 
     private void SetVolume(AudioMixer mixer, string param, float value)
