@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-    private Dictionary<string, List<SoundEntry>> groupedSoundEntries = new Dictionary<string, List<SoundEntry>>();
+    private Dictionary<string, List<SoundEntry>> groupedSoundEntries = new Dictionary<
+        string,
+        List<SoundEntry>
+    >();
     private GameObject prototype;
 
     private AudioSource music;
@@ -16,8 +19,8 @@ public class SoundManager : MonoBehaviour
         AudioSource audioSource = prototype.AddComponent<AudioSource>();
         AudioSourceLifeCycle audioSourceLifeCycle = prototype.AddComponent<AudioSourceLifeCycle>();
         audioSourceLifeCycle.audioSource = audioSource;
-        prototype.SetActive(false);
 
+        prototype.SetActive(false);
 
         var soundLibrary2 = Resources.LoadAll<SoundLibrary>("SoundManager");
         Init(soundLibrary2);
@@ -31,7 +34,7 @@ public class SoundManager : MonoBehaviour
         {
             foreach (SoundLibrary lib in soundLibrary)
             {
-                foreach(var entry in lib.GetSoundEntries())
+                foreach (var entry in lib.GetSoundEntries())
                 {
                     if (!groupedSoundEntries.ContainsKey(entry.Key))
                         groupedSoundEntries[entry.Key] = entry.Value;
@@ -43,14 +46,28 @@ public class SoundManager : MonoBehaviour
     }
 
     //== Basic Controls
-    public AudioSource PlaySoundInternal(AudioClip audioClip, Vector3 position, Transform followTarget, float pitchOverride) { return PlaySoundInternal(audioClip.name, position, followTarget, pitchOverride);  }
-    public AudioSource PlaySoundInternal(string name, Vector3 position, Transform followTarget, float pitchOverride) {
+    public AudioSource PlaySoundInternal(
+        AudioClip audioClip,
+        Vector3 position,
+        Transform followTarget,
+        float pitchOverride
+    )
+    {
+        return PlaySoundInternal(audioClip.name, position, followTarget, pitchOverride);
+    }
+    public AudioSource PlaySoundInternal(
+        string name,
+        Vector3 position,
+        Transform followTarget,
+        float pitchOverride
+    )
+    {
         List<SoundEntry> soundEntries;
 
-        if(!groupedSoundEntries.TryGetValue(name, out soundEntries))
+        if (!groupedSoundEntries.TryGetValue(name, out soundEntries))
         {
             Debug.LogError("Sound was not found in library: " + name);
-            foreach(var entry in groupedSoundEntries.Keys)
+            foreach (var entry in groupedSoundEntries.Keys)
             {
                 Debug.Log(entry);
             }
@@ -67,7 +84,7 @@ public class SoundManager : MonoBehaviour
         var audioSourceLifecycle = go.GetComponent<AudioSourceLifeCycle>();
 
         go.transform.position = position;
-        
+
         audioSource.clip = soundEntry.audioClip;
         audioSource.volume = soundEntry.volume;
         audioSource.loop = soundEntry.looping;
@@ -75,14 +92,58 @@ public class SoundManager : MonoBehaviour
         audioSource.panStereo = 0;
         audioSource.outputAudioMixerGroup = soundEntry.audioMixerGroup;
 
+        var audioSourceLowPass = go.GetOrAddComponent<AudioLowPassFilter>();
+        audioSourceLowPass.enabled = false;
+
+        if (soundEntry.customFalloff != null)
+        {
+            audioSource.rolloffMode = AudioRolloffMode.Custom;
+            audioSource.maxDistance =
+                soundEntry.customFalloff.volumeFalloff[
+                    soundEntry.customFalloff.volumeFalloff.length - 1
+                ].time;
+
+            audioSource.SetCustomCurve(
+                AudioSourceCurveType.CustomRolloff,
+                soundEntry.customFalloff.volumeFalloff
+            );
+
+            //We scale the animation curve so you can draw it in absolute values 22,000khz to 0khz, plotted against units
+            if (soundEntry.customFalloff.useLowPass)
+            {
+                audioSourceLowPass.enabled = true;
+
+                var lowPassCurveScaled = new AnimationCurve();
+                Keyframe[] points = new Keyframe[soundEntry.customFalloff.lowPassFalloff.length];
+                for (int i = 0; i < soundEntry.customFalloff.lowPassFalloff.length; i++)
+                {
+                    var key = soundEntry.customFalloff.lowPassFalloff[i];
+                    key.time = key.time / audioSource.maxDistance;
+                    key.value = key.value / 22000;
+                    key.inTangent = key.inTangent / audioSource.maxDistance; //Don't know why this works
+                    key.outTangent = key.outTangent / audioSource.maxDistance; //Don't know why this works
+                    points[i] = key;
+                }
+                lowPassCurveScaled.keys = points;
+
+                audioSourceLowPass.customCutoffCurve = lowPassCurveScaled;
+            }
+        }
+        else
+        {
+            audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+            audioSource.maxDistance = 500; //Default
+        }
+
         if (soundEntry.pitchVariation != 0)
-            audioSource.pitch = 1 + Random.Range(-soundEntry.pitchVariation, soundEntry.pitchVariation);
+            audioSource.pitch =
+                1 + Random.Range(-soundEntry.pitchVariation, soundEntry.pitchVariation);
         else
             audioSource.pitch = 1;
 
         if (pitchOverride != 0)
             audioSource.pitch = pitchOverride;
-        
+
         audioSourceLifecycle.toFollow = followTarget;
 
         audioSource.Play();
@@ -91,7 +152,7 @@ public class SoundManager : MonoBehaviour
 
     public void PlayMusicInternal(string name, float fadeTime)
     {
-        if(music == null)
+        if (music == null)
         {
             var go = new GameObject("Music AudioSource");
             DontDestroyOnLoad(go);
@@ -129,12 +190,18 @@ public class SoundManager : MonoBehaviour
     }
 
     //== Fading in and out - with handling of halting halfway through
-    private static Dictionary<AudioSource, Coroutine> fadingAudioSources = new Dictionary<AudioSource, Coroutine>();
+    private static Dictionary<AudioSource, Coroutine> fadingAudioSources = new Dictionary<
+        AudioSource,
+        Coroutine
+    >();
 
     public static void FadeOut(AudioSource audioSource, float fadeTime)
     {
         CancelExistingFade(audioSource);
-        fadingAudioSources.Add(audioSource, Coroutiner.Instance.StartCoroutine(_FadeOut(audioSource, fadeTime)));
+        fadingAudioSources.Add(
+            audioSource,
+            Coroutiner.Instance.StartCoroutine(_FadeOut(audioSource, fadeTime))
+        );
     }
     //Useful if you want to do something after the sound fades out - but will not be halted if you try to fade it in again!
     public static IEnumerator FadeOut_ManualCoroutine(AudioSource audioSource, float fadeTime)
@@ -163,7 +230,10 @@ public class SoundManager : MonoBehaviour
     public static void FadeIn(AudioSource audioSource, float fadeTime)
     {
         CancelExistingFade(audioSource);
-        fadingAudioSources.Add(audioSource, Coroutiner.Instance.StartCoroutine(_FadeIn(audioSource, fadeTime)));
+        fadingAudioSources.Add(
+            audioSource,
+            Coroutiner.Instance.StartCoroutine(_FadeIn(audioSource, fadeTime))
+        );
     }
     private static IEnumerator _FadeIn(AudioSource audioSource, float FadeTime)
     {
@@ -172,10 +242,13 @@ public class SoundManager : MonoBehaviour
 
         audioSource.Stop();
         audioSource.Play();
-        
+
         while (audioSource.volume < targetVol)
         {
-            audioSource.volume = Mathf.Min(targetVol, audioSource.volume + Time.deltaTime / FadeTime) ;
+            audioSource.volume = Mathf.Min(
+                targetVol,
+                audioSource.volume + Time.deltaTime / FadeTime
+            );
 
             yield return null;
         }
@@ -184,13 +257,20 @@ public class SoundManager : MonoBehaviour
     public static void FadeTo(AudioSource audioSource, float targetVolume, float speed)
     {
         CancelExistingFade(audioSource);
-        fadingAudioSources.Add(audioSource, Coroutiner.Instance.StartCoroutine(_FadeTo(audioSource, targetVolume, speed)));
+        fadingAudioSources.Add(
+            audioSource,
+            Coroutiner.Instance.StartCoroutine(_FadeTo(audioSource, targetVolume, speed))
+        );
     }
     private static IEnumerator _FadeTo(AudioSource audioSource, float targetVolume, float speed)
     {
         while (audioSource.volume != targetVolume)
         {
-            audioSource.volume = Mathf.MoveTowards(audioSource.volume, targetVolume, speed * Time.deltaTime);
+            audioSource.volume = Mathf.MoveTowards(
+                audioSource.volume,
+                targetVolume,
+                speed * Time.deltaTime
+            );
 
             yield return null;
         }
@@ -200,20 +280,25 @@ public class SoundManager : MonoBehaviour
     {
         if (fadingAudioSources.ContainsKey(audioSource))
         {
-            if(fadingAudioSources[audioSource] != null)
+            if (fadingAudioSources[audioSource] != null)
                 Coroutiner.Instance.StopCoroutine(fadingAudioSources[audioSource]);
 
             fadingAudioSources.Remove(audioSource);
         }
     }
 
-    //===Singleton Related things=== 
+    //===Singleton Related things===
 
     public static AudioSource PlaySound(AudioClip audioClip, float pitchOverride)
     {
         return Instance.PlaySoundInternal(audioClip.name, new Vector3(), null, pitchOverride);
     }
-    public static AudioSource PlaySound(AudioClip audioClip, Vector3 position = new Vector3(), Transform followTarget = null, float pitchOverride = 0)
+    public static AudioSource PlaySound(
+        AudioClip audioClip,
+        Vector3 position = new Vector3(),
+        Transform followTarget = null,
+        float pitchOverride = 0
+    )
     {
         return Instance.PlaySoundInternal(audioClip.name, position, followTarget, pitchOverride);
     }
@@ -221,7 +306,12 @@ public class SoundManager : MonoBehaviour
     {
         return Instance.PlaySoundInternal(name, new Vector3(), null, pitchOverride);
     }
-    public static AudioSource PlaySound(string name, Vector3 position = new Vector3(), Transform followTarget = null, float pitchOverride = 0)
+    public static AudioSource PlaySound(
+        string name,
+        Vector3 position = new Vector3(),
+        Transform followTarget = null,
+        float pitchOverride = 0
+    )
     {
         return Instance.PlaySoundInternal(name, position, followTarget, pitchOverride);
     }

@@ -29,4 +29,6 @@ public class SoundEntry
     public string[] aliases;
 
     public AudioMixerGroup audioMixerGroup;
+
+    public CustomFalloff customFalloff;
 }
