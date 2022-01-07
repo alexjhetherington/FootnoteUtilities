@@ -235,7 +235,7 @@ public class UISettings : ScriptableObject
 
         var textComp = button.GetComponentInChildren<TextMeshProUGUI>();
         textComp.horizontalAlignment = HorizontalAlignmentOptions.Center;
-        textComp.verticalAlignment = VerticalAlignmentOptions.Middle;
+        textComp.verticalAlignment = VerticalAlignmentOptions.Capline;
         textComp.enableWordWrapping = false;
 
         container.AddChildren(button);
