@@ -1,11 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using static AnchorUtil;
 
 public static class FootnoteRectTransformExtensions
 {
+    public static RectTransform ModifyInline<T>(this RectTransform rectTransform, Action<T> action)
+    {
+        action.Invoke(rectTransform.GetComponent<T>());
+        return rectTransform;
+    }
+
     public static RectTransform SetAnchorPos(this RectTransform rt, AnchorPosParams anchorParams)
     {
         rt.anchorMin = anchorParams.anchorMin;
