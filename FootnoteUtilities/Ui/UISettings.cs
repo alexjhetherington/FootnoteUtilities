@@ -190,10 +190,12 @@ public class UISettings : ScriptableObject
         if (overrideSprite != null)
         {
             image.sprite = overrideSprite;
+            image.type = Image.Type.Sliced;
         }
         else if (buttonSprite != null)
         {
             image.sprite = buttonSprite;
+            image.type = Image.Type.Sliced;
         }
 
         var b = button.AddComponent<Button>();
@@ -396,6 +398,7 @@ public class UISettings : ScriptableObject
         if (panelSprite != null)
         {
             image.sprite = panelSprite;
+            image.type = Image.Type.Sliced;
         }
 
         image.color = panelBackground;
