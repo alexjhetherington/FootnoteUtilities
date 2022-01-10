@@ -241,7 +241,7 @@ public class UISettings : ScriptableObject
         else
         {
             colours.normalColor = buttonBackground;
-            colours.highlightedColor = buttonBackground + buttonHighlight;
+            colours.highlightedColor = buttonHighlight;
             colours.pressedColor = buttonBackground;
             colours.selectedColor = buttonBackground;
         }
