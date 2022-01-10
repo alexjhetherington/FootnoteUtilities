@@ -15,8 +15,6 @@ using static UnityEngine.UI.Slider;
 [CreateAssetMenu()]
 public class UISettings : ScriptableObject
 {
-    private static Color buttonAdjust = new Color(0.1f, 0.1f, 0.1f, 0f);
-
     [Header("Title Text")]
     [SerializeField]
     private TextAlignmentOptions titleAlignment = TextAlignmentOptions.MidlineLeft;
@@ -55,9 +53,11 @@ public class UISettings : ScriptableObject
     [SerializeField]
     private TextAnchor buttonAlignment;
     [SerializeField]
-    private Color buttonBackground = Color.white - buttonAdjust;
+    private Color buttonBackground = Color.white;
     [SerializeField]
     private Color buttonForeground = Color.black;
+    [SerializeField]
+    private Color buttonHighlight = Color.white;
     [SerializeField]
     private Sprite buttonSprite;
     [SerializeField]
@@ -95,6 +95,17 @@ public class UISettings : ScriptableObject
     [SerializeField]
     private Vector2 sliderHandleSize = new Vector2(15, 15);
 
+    [Header("Camera")]
+    [SerializeField]
+    private Rect viewport;
+    [SerializeField]
+    private Color cameraBackground;
+
+    [SerializeField]
+    private Vector2 screenSizeScaleReference = default;
+    [SerializeField]
+    private float widthToHeightScaling = 0;
+
     public RectTransform MakeUi(AnchorPosParams anchorPos)
     {
         if (EventSystem.current == null)
@@ -117,6 +128,25 @@ public class UISettings : ScriptableObject
         cam.clearFlags = CameraClearFlags.Nothing;
         cam.depth = 50;
         cam.cullingMask = 1 << LayerMask.NameToLayer("UI");
+
+        if (cameraBackground.a > 0.9)
+        {
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = cameraBackground;
+        }
+
+        if (viewport.size.magnitude > 0.01f)
+        {
+            cam.rect = viewport;
+        }
+
+        if (screenSizeScaleReference.sqrMagnitude > 0.01f)
+        {
+            CanvasScaler scaler = rootGo.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = screenSizeScaleReference;
+            scaler.matchWidthOrHeight = widthToHeightScaling;
+        }
 
         canvas.renderMode = RenderMode.ScreenSpaceCamera;
         canvas.worldCamera = cam;
@@ -172,14 +202,14 @@ public class UISettings : ScriptableObject
 
     public RectTransform Button(string text, UnityAction action)
     {
-        return Button(text, null, null, action);
+        return Button(text, null, action);
     }
 
     public RectTransform Button(
         string text,
-        Color? overrideColor,
         Sprite overrideSprite,
-        UnityAction action
+        UnityAction action,
+        Color[] overrideColors = default
     )
     {
         var container = UiGo("Button Layout Container");
@@ -201,17 +231,19 @@ public class UISettings : ScriptableObject
         var b = button.AddComponent<Button>();
         b.targetGraphic = image;
         var colours = b.colors;
-        if (overrideColor.HasValue)
+        if (overrideColors != default)
         {
-            colours.normalColor = overrideColor.Value;
-            colours.highlightedColor = overrideColor.Value + buttonAdjust;
-            colours.pressedColor = overrideColor.Value;
+            colours.normalColor = overrideColors[0];
+            colours.highlightedColor = overrideColors[1];
+            colours.pressedColor = overrideColors[0];
+            colours.selectedColor = overrideColors[0];
         }
         else
         {
             colours.normalColor = buttonBackground;
-            colours.highlightedColor = buttonBackground + buttonAdjust;
+            colours.highlightedColor = buttonBackground + buttonHighlight;
             colours.pressedColor = buttonBackground;
+            colours.selectedColor = buttonBackground;
         }
         b.colors = colours;
 
