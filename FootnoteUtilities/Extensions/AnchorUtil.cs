@@ -21,7 +21,7 @@ public static class AnchorUtil
             anchorMin = new Vector2(0, 0),
             anchorMax = new Vector2(1, 1),
             offsetMin = new Vector2(0, 0),
-            offsetMax = new Vector2(1, 1),
+            offsetMax = new Vector2(0, 0),
             pivot = new Vector2(0.5f, 0.5f)
         };
     }
