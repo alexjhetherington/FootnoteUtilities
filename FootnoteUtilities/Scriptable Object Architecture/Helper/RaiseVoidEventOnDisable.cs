@@ -5,7 +5,7 @@ using UnityEngine;
 public class RaiseVoidEventOnDisable : MonoBehaviour
 {
     public VoidEvent voidEvent;
-    
+
     void OnDisable()
     {
         Debug.Log("Raising Event: " + voidEvent.name);

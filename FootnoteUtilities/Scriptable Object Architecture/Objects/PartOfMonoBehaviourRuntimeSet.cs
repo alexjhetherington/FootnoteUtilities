@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class PartOfMonoBehaviourRuntimeSet : MonoBehaviour
 {
-    [SerializeField] private bool excludeWhenDisabled;
-    [SerializeField] private MonoBehaviourRuntimeSet set;
+    [SerializeField]
+    private bool excludeWhenDisabled;
+    [SerializeField]
+    private MonoBehaviourRuntimeSet set;
 
     public virtual void OnEnable()
     {
-        if(excludeWhenDisabled)
+        if (excludeWhenDisabled)
             set.Add(this);
     }
 

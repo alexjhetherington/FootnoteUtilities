@@ -1,5 +1,4 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
 public static class FootnoteVector3Extensions
 {
@@ -14,7 +13,6 @@ public static class FootnoteVector3Extensions
 
     public static bool FuzzyEquals(this Vector3 a, Vector3 b, float epsilon)
     {
-
         return Vector3.SqrMagnitude(a - b) < epsilon;
     }
 

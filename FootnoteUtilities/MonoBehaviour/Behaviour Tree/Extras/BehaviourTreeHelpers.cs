@@ -4,7 +4,11 @@ using UnityEngine;
 
 public static class BehaviourTreeHelpers
 {
-    public static void AddWaypointsToBlackboard(Brain brain, Vector3[] waypoints, string vector3QueueKey)
+    public static void AddWaypointsToBlackboard(
+        Brain brain,
+        Vector3[] waypoints,
+        string vector3QueueKey
+    )
     {
         List<Vector3> queue = new List<Vector3>(waypoints.Length);
 

@@ -18,7 +18,7 @@ public abstract class Brain : MonoBehaviour, ParentNode
 
     public virtual void OnDisable()
     {
-        if(root != null)
+        if (root != null)
             root.Cancel();
     }
 
@@ -40,7 +40,7 @@ public abstract class Brain : MonoBehaviour, ParentNode
         {
             Vector3 destination;
 
-            if(Blackboard.TryGetTypedValue(key, out destination))
+            if (Blackboard.TryGetTypedValue(key, out destination))
             {
                 Debug.DrawLine(transform.position, destination, Color.blue, 5);
             }
@@ -59,16 +59,25 @@ public abstract class Brain : MonoBehaviour, ParentNode
 
     public void HandleChildComplete()
     {
-        Debug.LogWarning("Behaviour finished with Complete signal. Are you sure you wanted the behaviour to finish?", this);
+        Debug.LogWarning(
+            "Behaviour finished with Complete signal. Are you sure you wanted the behaviour to finish?",
+            this
+        );
     }
 
     public void HandleChildFailed()
     {
-        Debug.LogWarning("Behaviour finished with Failed signal. Are you sure you wanted the behaviour to finish?", this);
+        Debug.LogWarning(
+            "Behaviour finished with Failed signal. Are you sure you wanted the behaviour to finish?",
+            this
+        );
     }
 
     public void HandleChildInterrupt(Node child)
     {
-        Debug.LogWarning("Behaviour finished with Interrupt signal. Are you sure you wanted the behaviour to finish?", this);
+        Debug.LogWarning(
+            "Behaviour finished with Interrupt signal. Are you sure you wanted the behaviour to finish?",
+            this
+        );
     }
 }

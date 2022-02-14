@@ -15,21 +15,22 @@ public class SoundLibraryInspector : Editor
         SerializedProperty soundEntriesProperty = serializedObject.FindProperty("soundEntries");
 
         textSearch = GUILayout.TextField(textSearch);
-        if(GUILayout.Button("Collapse All"))
+        if (GUILayout.Button("Collapse All"))
         {
             for (int i = 0; i < soundEntriesProperty.arraySize; i++)
             {
-                SerializedProperty soundEntryProperty = soundEntriesProperty.GetArrayElementAtIndex(i);
+                SerializedProperty soundEntryProperty = soundEntriesProperty.GetArrayElementAtIndex(
+                    i
+                );
                 soundEntryProperty.isExpanded = false;
             }
         }
         EditorGUILayout.PropertyField(serializedObject.FindProperty("audioMixerGroup"));
         GUILayout.Space(40);
-        
+
         ShowSoundEntries(soundEntriesProperty);
         serializedObject.ApplyModifiedProperties();
     }
-   
 
     private void ShowSoundEntries(SerializedProperty soundEntriesProperty)
     {
@@ -41,8 +42,8 @@ public class SoundLibraryInspector : Editor
         for (int i = 0; i < soundEntriesProperty.arraySize; i++)
         {
             SerializedProperty soundEntryProperty = soundEntriesProperty.GetArrayElementAtIndex(i);
-            Object audioClip = soundEntryProperty.FindPropertyRelative("audioClip").objectReferenceValue;
-            
+            Object audioClip =
+                soundEntryProperty.FindPropertyRelative("audioClip").objectReferenceValue;
 
             //Skip the entry if text search is active and entry does not have relevant alias
             if (!string.IsNullOrEmpty(textSearch) && audioClip != null)
@@ -61,7 +62,7 @@ public class SoundLibraryInspector : Editor
 
                 _aliases.Add(audioClip.name);
                 string lowerTextSearch = textSearch.ToLower();
-                
+
                 bool match = false;
                 foreach (string alias in _aliases)
                 {
@@ -78,7 +79,13 @@ public class SoundLibraryInspector : Editor
             ShowSoundEntry(soundEntriesProperty, soundEntryProperty, i);
 
             //Remove entries that are null (unless it is the last one) or already added
-            if (i < soundEntriesProperty.arraySize - 1 && (audioClip == null || (audioClip != null && soundEntryNames.Contains(audioClip.name))))
+            if (
+                i < soundEntriesProperty.arraySize - 1
+                && (
+                    audioClip == null
+                    || (audioClip != null && soundEntryNames.Contains(audioClip.name))
+                )
+            )
             {
                 soundEntriesProperty.DeleteArrayElementAtIndex(i);
                 i--; //Was questioning whether it is necessary. It is, otherwise the object reference window does not work properly
@@ -90,8 +97,11 @@ public class SoundLibraryInspector : Editor
         }
 
         //Add an entry if the final audioClip is not null
-        SerializedProperty finalSoundEntry = soundEntriesProperty.GetArrayElementAtIndex(soundEntriesProperty.arraySize - 1);
-        Object finalAudioClip = finalSoundEntry.FindPropertyRelative("audioClip").objectReferenceValue;
+        SerializedProperty finalSoundEntry = soundEntriesProperty.GetArrayElementAtIndex(
+            soundEntriesProperty.arraySize - 1
+        );
+        Object finalAudioClip =
+            finalSoundEntry.FindPropertyRelative("audioClip").objectReferenceValue;
         if (finalAudioClip != null)
         {
             SoundLibrary soundLibrary = target as SoundLibrary;
@@ -100,12 +110,19 @@ public class SoundLibraryInspector : Editor
         }
     }
 
-    private static void ShowSoundEntry(SerializedProperty soundEntriesProperty, SerializedProperty soundEntryProperty, int index)
+    private static void ShowSoundEntry(
+        SerializedProperty soundEntriesProperty,
+        SerializedProperty soundEntryProperty,
+        int index
+    )
     {
         EditorGUILayout.PropertyField(soundEntryProperty);
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        if (index < soundEntriesProperty.arraySize - 1 && GUILayout.Button("-", GUILayout.MaxWidth(20), GUILayout.MaxHeight(16)))
+        if (
+            index < soundEntriesProperty.arraySize - 1
+            && GUILayout.Button("-", GUILayout.MaxWidth(20), GUILayout.MaxHeight(16))
+        )
         {
             soundEntriesProperty.DeleteArrayElementAtIndex(index);
         }

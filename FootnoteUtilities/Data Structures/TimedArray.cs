@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TimedArray<T> {
-
+public class TimedArray<T>
+{
     private struct TimedItem
     {
         public float timeLeft;
@@ -20,7 +20,7 @@ public class TimedArray<T> {
 
     private int FindItem(T item)
     {
-        for(int i = 0; i < _timedArray.Count; i++)
+        for (int i = 0; i < _timedArray.Count; i++)
         {
             T currentItem = _timedArray[i].item;
             if (currentItem.Equals(item))
@@ -36,7 +36,7 @@ public class TimedArray<T> {
     {
         //Debug.Log("Add: " + item);
         int index = FindItem(item);
-        if(index >= 0)
+        if (index >= 0)
         {
             _timedArray[index] = new TimedItem(time, item);
         }
@@ -61,7 +61,6 @@ public class TimedArray<T> {
                 //Debug.Log("Remove: " + _timedArray[i].item);
                 _timedArray.RemoveAt(i);
             }
-            
         }
     }
 

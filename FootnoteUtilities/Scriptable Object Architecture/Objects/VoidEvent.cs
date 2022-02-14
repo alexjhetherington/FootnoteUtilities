@@ -7,8 +7,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class VoidEvent : ScriptableObject
 {
-    private readonly List<Action> eventListener =
-            new List<Action>();
+    private readonly List<Action> eventListener = new List<Action>();
 
     public void Raise()
     {

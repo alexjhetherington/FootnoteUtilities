@@ -7,7 +7,7 @@ public class LookAt : MonoBehaviour, Node
 {
     [SerializeField]
     private float speed;
-    
+
     private Brain brain;
     private string targetKey;
     private bool continuous;
@@ -15,7 +15,7 @@ public class LookAt : MonoBehaviour, Node
     private Component targetComponent;
     private Vector3? targetVector;
     private ParentNode parent;
-    
+
     public LookAt Init(Brain brain, string targetKey, bool continuous = false)
     {
         this.brain = brain;
@@ -37,13 +37,22 @@ public class LookAt : MonoBehaviour, Node
     {
         if (targetVector == null && targetComponent == null)
             return;
-        
-        Vector3 lookPos = (targetComponent != null ? targetComponent.transform.position : targetVector.Value) - transform.position;
+
+        Vector3 lookPos =
+            (targetComponent != null ? targetComponent.transform.position : targetVector.Value)
+            - transform.position;
         lookPos.y = 0;
 
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(lookPos), Time.deltaTime * speed);
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            Quaternion.LookRotation(lookPos),
+            Time.deltaTime * speed
+        );
 
-        if (!continuous && Quaternion.Angle(transform.rotation, Quaternion.LookRotation(lookPos)) < 0.5)
+        if (
+            !continuous
+            && Quaternion.Angle(transform.rotation, Quaternion.LookRotation(lookPos)) < 0.5
+        )
         {
             parent.HandleChildComplete();
             targetVector = null;
@@ -61,7 +70,7 @@ public class LookAt : MonoBehaviour, Node
         }
         else if (brain.Blackboard.TryGetTypedValue(targetKey, out targetVector))
         {
-            return;            
+            return;
         }
 
         Debug.Log("LookAt could not find Component or Vector3 in blackboard with key:" + targetKey);

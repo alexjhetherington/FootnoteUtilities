@@ -12,10 +12,7 @@ public class FloatVariable : ScriptableObject
 
     public float Value
     {
-        get
-        {
-            return _value;
-        }
+        get { return _value; }
         set
         {
             //Not a good idea. Reseting values to their 'default' on scene load will not trigger an event
@@ -29,8 +26,7 @@ public class FloatVariable : ScriptableObject
         }
     }
 
-    private readonly List<Action<float>> variableChangedListeners =
-            new List<Action<float>>();
+    private readonly List<Action<float>> variableChangedListeners = new List<Action<float>>();
 
     public void RegisterListener(Action<float> listener)
     {

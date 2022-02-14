@@ -51,7 +51,9 @@ public class Parallel : Node, ParentNode
 
     public void HandleChildInterrupt(Node child)
     {
-        Debug.LogError("Parallel node does not support interruption. Failed children are cancelled, so should not be possible. Unless someone added an option for Parallel to only cancel+report to parent when receiving a complete signal");
+        Debug.LogError(
+            "Parallel node does not support interruption. Failed children are cancelled, so should not be possible. Unless someone added an option for Parallel to only cancel+report to parent when receiving a complete signal"
+        );
         throw new NotImplementedException();
     }
 

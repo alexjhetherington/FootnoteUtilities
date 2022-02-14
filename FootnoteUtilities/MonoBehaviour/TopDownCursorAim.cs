@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class TopDownCursorAim : MonoBehaviour
 {
-    [SerializeField] private Camera cam;
+    [SerializeField]
+    private Camera cam;
 
     // Update is called once per frame
     void Update()

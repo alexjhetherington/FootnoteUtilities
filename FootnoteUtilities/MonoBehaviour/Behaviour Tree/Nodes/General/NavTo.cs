@@ -39,7 +39,7 @@ public class NavTo : Node
         if (debug)
             Debug.Log("Cancelled: " + Environment.StackTrace);
 
-        if(navMeshAgent.isActiveAndEnabled)
+        if (navMeshAgent.isActiveAndEnabled)
             navMeshAgent.isStopped = true;
 
         if (currentNavTo != null)
@@ -64,7 +64,12 @@ public class NavTo : Node
             }
             else
             {
-                Debug.LogWarning("NavTo tried to locate to nav to an area that was not near the navmesh: " + destinationKey + ", vector3: " + location);
+                Debug.LogWarning(
+                    "NavTo tried to locate to nav to an area that was not near the navmesh: "
+                        + destinationKey
+                        + ", vector3: "
+                        + location
+                );
                 parent.HandleChildFailed();
             }
         }
@@ -80,7 +85,9 @@ public class NavTo : Node
         }
         else
         {
-            Debug.Log("NavTo could not find Vector3 or Component in blackboard with key:" + destinationKey);
+            Debug.Log(
+                "NavTo could not find Vector3 or Component in blackboard with key:" + destinationKey
+            );
             parent.HandleChildFailed();
         }
     }
@@ -89,12 +96,15 @@ public class NavTo : Node
     {
         while (!navMeshAgent.HasArrived())
         {
-            if (targetTransform != null && Vector3.Distance(cachedTargetPosition, targetTransform.position) > 0.5)
+            if (
+                targetTransform != null
+                && Vector3.Distance(cachedTargetPosition, targetTransform.position) > 0.5
+            )
             {
                 navMeshAgent.SetDestination(targetTransform.position);
                 cachedTargetPosition = targetTransform.position;
             }
-                
+
             yield return null;
         }
 

@@ -43,6 +43,4 @@ public class DebugNode : Node, ParentNode
     {
         parent.HandleChildInterrupt(this);
     }
-
-
 }

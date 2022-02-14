@@ -5,7 +5,8 @@ using UnityEngine;
 [CreateAssetMenu]
 public class LayerGroup : ScriptableObject
 {
-    [SerializeField] private string[] layers;
+    [SerializeField]
+    private string[] layers;
 
     public int GetMask()
     {

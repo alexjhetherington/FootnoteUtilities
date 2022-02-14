@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class SoundInterface : MonoBehaviour
 {
-    [SerializeField] private AudioClip audioClip;
+    [SerializeField]
+    private AudioClip audioClip;
 
     public void Play()
     {

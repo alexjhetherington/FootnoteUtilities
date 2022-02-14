@@ -12,10 +12,7 @@ public class StringVariable : ScriptableObject
 
     public string Value
     {
-        get
-        {
-            return _value;
-        }
+        get { return _value; }
         set
         {
             //Not a good idea. Reseting values to their 'default' on scene load will not trigger an event
@@ -29,8 +26,7 @@ public class StringVariable : ScriptableObject
         }
     }
 
-    private readonly List<Action<string>> variableChangedListeners =
-            new List<Action<string>>();
+    private readonly List<Action<string>> variableChangedListeners = new List<Action<string>>();
 
     public void RegisterListener(Action<string> listener)
     {

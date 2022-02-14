@@ -6,7 +6,8 @@ using UnityEngine.Playables;
 
 public class PlayableAnimationController : MonoBehaviour
 {
-    [SerializeField] private int maxClips = 20;
+    [SerializeField]
+    private int maxClips = 20;
 
     private PlayableGraph _playableGraph;
     private AnimationMixerPlayable _animationMixerPlayable;
@@ -17,7 +18,7 @@ public class PlayableAnimationController : MonoBehaviour
     private int nextIndex;
     private Dictionary<AnimationClip, int> clipIndex;
     private ClipInfo[] clipInfos;
-    
+
     private void Awake()
     {
         clipIndex = new Dictionary<AnimationClip, int>(maxClips);
@@ -30,7 +31,6 @@ public class PlayableAnimationController : MonoBehaviour
         _playableGraph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
 
         _animationMixerPlayable = AnimationMixerPlayable.Create(_playableGraph, maxClips);
-
 
         _playableOutput = AnimationPlayableOutput.Create(_playableGraph, "Animation", _animator);
         _playableOutput.SetSourcePlayable(_animationMixerPlayable);
@@ -58,13 +58,13 @@ public class PlayableAnimationController : MonoBehaviour
 
         for (int i = 0; i < clipInfos.Length; i++)
         {
-            if(i == index)
+            if (i == index)
             {
-                if(!clipInfos[i].isFadeIn || !clipInfos[i].clip.isLooping)
+                if (!clipInfos[i].isFadeIn || !clipInfos[i].clip.isLooping)
                 {
                     if (clipInfos[i].lerpingCoroutine != null)
                         StopCoroutine(clipInfos[i].lerpingCoroutine);
-                    
+
                     clipInfos[i].lerpingCoroutine = StartCoroutine(FadeClip(i, true, fadeTime));
                 }
             }
@@ -80,7 +80,7 @@ public class PlayableAnimationController : MonoBehaviour
             }
         }
     }
-    
+
     public void Stop()
     {
         ResetClips();
@@ -109,11 +109,18 @@ public class PlayableAnimationController : MonoBehaviour
     private IEnumerator FadeClip(int clipIndex, bool fadeIn, float fadeTime)
     {
         if (fadeTime > clipInfos[clipIndex].clip.length)
-            Debug.LogWarning(string.Format("Fade time [{0}] is greater than clip length [{1}] for clip [{2}]", fadeTime, clipInfos[clipIndex].clip.length, clipInfos[clipIndex].clip.name));
+            Debug.LogWarning(
+                string.Format(
+                    "Fade time [{0}] is greater than clip length [{1}] for clip [{2}]",
+                    fadeTime,
+                    clipInfos[clipIndex].clip.length,
+                    clipInfos[clipIndex].clip.name
+                )
+            );
 
         if (fadeIn)
             _animationMixerPlayable.GetInput(clipIndex).SetTime(0);
-            
+
         clipInfos[clipIndex].isFadeIn = fadeIn;
         float endWeight = fadeIn ? 1 : 0;
 
@@ -121,17 +128,17 @@ public class PlayableAnimationController : MonoBehaviour
         if (!fadeIn)
             progress = 1 - progress;
 
-        while(progress < 1)
+        while (progress < 1)
         {
             progress = Mathf.Min(1, progress + Time.deltaTime / fadeTime);
             var weight = Mathf.Lerp(fadeIn ? 0 : 1, fadeIn ? 1 : 0, progress);
             SetClipWeight(clipIndex, weight);
 
-            if(progress == 1)
+            if (progress == 1)
                 clipInfos[clipIndex].lerpingCoroutine = null;
 
             yield return null;
-        } 
+        }
     }
 
     private void SetClipWeight(int index, float weight)
@@ -162,6 +169,5 @@ public class PlayableAnimationController : MonoBehaviour
         public float weight;
         public Coroutine lerpingCoroutine;
         public bool isFadeIn;
-
     }
 }

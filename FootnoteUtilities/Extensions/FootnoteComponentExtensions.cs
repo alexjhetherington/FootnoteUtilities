@@ -8,13 +8,14 @@ using UnityEngine;
 /// </summary>
 public static class FootnoteComponentExtensions
 {
-    public static T AddComponent<T>(this UnityEngine.Component component) where T : UnityEngine.Component =>
-        component.gameObject.AddComponent<T>();
-    
-    public static bool HasComponent<T>(this UnityEngine.Component component) where T : UnityEngine.Component =>
-        component.GetComponent<T>() != null;
+    public static T AddComponent<T>(this UnityEngine.Component component)
+        where T : UnityEngine.Component => component.gameObject.AddComponent<T>();
 
-    public static T GetOrAddComponent<T>(this UnityEngine.Component component) where T : UnityEngine.Component
+    public static bool HasComponent<T>(this UnityEngine.Component component)
+        where T : UnityEngine.Component => component.GetComponent<T>() != null;
+
+    public static T GetOrAddComponent<T>(this UnityEngine.Component component)
+        where T : UnityEngine.Component
     {
         T other = component.GetComponent<T>();
 

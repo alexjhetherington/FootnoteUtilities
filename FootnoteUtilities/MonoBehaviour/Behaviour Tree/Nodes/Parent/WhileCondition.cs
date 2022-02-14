@@ -24,8 +24,12 @@ public class WhileCondition : Node, ParentNode
         this.reevaluate = reevaluate;
     }
 
-    public WhileCondition(Brain brain, Func<bool> condition, Node child) : this(null, condition, child, false) { }
-    public static WhileCondition WithPriority(Brain brain, Func<bool> condition, Node child) { return new WhileCondition(brain, condition, child, true); }
+    public WhileCondition(Brain brain, Func<bool> condition, Node child)
+        : this(null, condition, child, false) { }
+    public static WhileCondition WithPriority(Brain brain, Func<bool> condition, Node child)
+    {
+        return new WhileCondition(brain, condition, child, true);
+    }
 
     public void Cancel()
     {
@@ -66,7 +70,7 @@ public class WhileCondition : Node, ParentNode
 
             yield return new WaitForSeconds(0.1f);
         }
-        
+
         parent.HandleChildInterrupt(this);
     }
 
@@ -98,7 +102,7 @@ public class WhileCondition : Node, ParentNode
         if (reevaluate && brain != null)
         {
             checkBecameTrue = brain.StartCoroutine(CheckBecameTrue_Coroutine(parent));
-        }  
+        }
     }
 
     public void HandleChildInterrupt(Node child)

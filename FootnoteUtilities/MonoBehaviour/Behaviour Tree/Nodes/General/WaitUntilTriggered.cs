@@ -18,7 +18,7 @@ public class WaitUntilTriggered : Node
 
     public void Trigger()
     {
-        if(parent != null)
+        if (parent != null)
             parent.HandleChildComplete();
 
         parent = null;

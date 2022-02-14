@@ -7,9 +7,15 @@ using Object = System.Object;
 
 public static class ScenePack
 {
-    private static Dictionary<int, GameObject[]> sceneRootObjects = new Dictionary<int, GameObject[]>();
-    private static Dictionary<int, Dictionary<Type, Object>> sceneTypedObjects = new Dictionary<int, Dictionary<Type, Object>>();
-    
+    private static Dictionary<int, GameObject[]> sceneRootObjects = new Dictionary<
+        int,
+        GameObject[]
+    >();
+    private static Dictionary<int, Dictionary<Type, Object>> sceneTypedObjects = new Dictionary<
+        int,
+        Dictionary<Type, Object>
+    >();
+
     //When Domain Loading is switched off
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void Init()
@@ -42,7 +48,7 @@ public static class ScenePack
         else if (!sceneTypedObjects[sceneIndex].ContainsKey(typeof(T)))
             unpacked.Invoke(PutTypedObject<T>(sceneIndex, sceneRootObjects[sceneIndex]));
         else
-            unpacked.Invoke((T) sceneTypedObjects[sceneIndex][typeof(T)]);
+            unpacked.Invoke((T)sceneTypedObjects[sceneIndex][typeof(T)]);
     }
 
     private static IEnumerator _UnpackScene<T>(int sceneIndex, Action<T> unpacked)

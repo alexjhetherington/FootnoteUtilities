@@ -33,7 +33,7 @@ public class Wait : Node
 
     public void Cancel()
     {
-        if(currentWaiting != null)
+        if (currentWaiting != null)
             root.StopCoroutine(currentWaiting);
     }
 

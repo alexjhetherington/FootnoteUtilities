@@ -28,7 +28,7 @@ public class Sequence : Node, ParentNode
     //Optimisation - only cancel up to the current node?
     public void Cancel()
     {
-        for(int i = 0; i < nodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
             nodes[i].Cancel();
         }
@@ -56,7 +56,9 @@ public class Sequence : Node, ParentNode
 
     public void HandleChildInterrupt(Node child)
     {
-        Debug.LogError("Sequence node does not support interruption. Failed children are cancelled, so should not be possible");
+        Debug.LogError(
+            "Sequence node does not support interruption. Failed children are cancelled, so should not be possible"
+        );
         throw new NotImplementedException();
     }
 

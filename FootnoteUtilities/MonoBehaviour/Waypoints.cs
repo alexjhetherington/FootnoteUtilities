@@ -8,7 +8,7 @@ public class Waypoints : MonoBehaviour
 
     public Vector3[] Get()
     {
-        if(waypoints == null)
+        if (waypoints == null)
         {
             waypoints = new Vector3[transform.childCount];
             for (int i = 0; i < waypoints.Length; i++)

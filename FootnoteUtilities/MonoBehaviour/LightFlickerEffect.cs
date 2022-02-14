@@ -28,7 +28,6 @@ public class LightFlickerEffect : MonoBehaviour
     Queue<float> smoothQueue;
     float lastSum = 0;
 
-
     /// <summary>
     /// Reset the randomness and start again. You usually don't need to call
     /// this, deactivating/reactivating is usually fine but if you want a strict
@@ -69,5 +68,4 @@ public class LightFlickerEffect : MonoBehaviour
         // Calculate new smoothed average
         light.intensity = lastSum / (float)smoothQueue.Count;
     }
-
 }

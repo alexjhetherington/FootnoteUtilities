@@ -12,10 +12,7 @@ public class IntVariable : ScriptableObject
 
     public int Value
     {
-        get
-        {
-            return _value;
-        }
+        get { return _value; }
         set
         {
             //Not a good idea. Reseting values to their 'default' on scene load will not trigger an event
@@ -29,8 +26,7 @@ public class IntVariable : ScriptableObject
         }
     }
 
-    private readonly List<Action<int>> variableChangedListeners =
-            new List<Action<int>>();
+    private readonly List<Action<int>> variableChangedListeners = new List<Action<int>>();
 
     public void RegisterListener(Action<int> listener)
     {

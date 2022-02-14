@@ -4,10 +4,11 @@
 /// </summary>
 public static class FootnoteGameObjectExtensions
 {
-    public static bool HasComponent<T>(this UnityEngine.GameObject gameObject) where T : UnityEngine.Component =>
-        gameObject.GetComponent<T>() != null;
+    public static bool HasComponent<T>(this UnityEngine.GameObject gameObject)
+        where T : UnityEngine.Component => gameObject.GetComponent<T>() != null;
 
-    public static T GetOrAddComponent<T>(this UnityEngine.GameObject gameObject) where T : UnityEngine.Component
+    public static T GetOrAddComponent<T>(this UnityEngine.GameObject gameObject)
+        where T : UnityEngine.Component
     {
         T other = gameObject.GetComponent<T>();
 

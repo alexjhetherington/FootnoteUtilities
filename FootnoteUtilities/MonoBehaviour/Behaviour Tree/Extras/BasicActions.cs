@@ -3,7 +3,14 @@ using UnityEngine;
 
 public static class BasicActions
 {
-    public static Action AssignPointBehind(Blackboard blackboard, string key, Transform source, Transform target, float maxDistance, int layerMask)
+    public static Action AssignPointBehind(
+        Blackboard blackboard,
+        string key,
+        Transform source,
+        Transform target,
+        float maxDistance,
+        int layerMask
+    )
     {
         return () =>
         {
@@ -18,23 +25,41 @@ public static class BasicActions
             else
                 newTarget = hit.point;
 
-            blackboard[key] = Footnote3D.GetPointBehindTargetWithRaycast(source.position, target.position, maxDistance, layerMask);
+            blackboard[key] = Footnote3D.GetPointBehindTargetWithRaycast(
+                source.position,
+                target.position,
+                maxDistance,
+                layerMask
+            );
         };
     }
 
-    internal static Action AssignTargetDiagonalTowards(Blackboard blackboard, string key, Transform source, Transform transform, float angle, float minDistance, float maxDistance) 
+    internal static Action AssignTargetDiagonalTowards(
+        Blackboard blackboard,
+        string key,
+        Transform source,
+        Transform transform,
+        float angle,
+        float minDistance,
+        float maxDistance
+    )
     {
         return () =>
         {
             float rangle = UnityEngine.Random.value >= 0.5 ? angle : -angle;
             Vector3 towards = transform.position - source.position;
             Vector3 angled = Quaternion.AngleAxis(rangle, Vector3.up) * towards;
-            Vector3 distanced = angled.normalized * UnityEngine.Random.Range(minDistance, maxDistance);
+            Vector3 distanced =
+                angled.normalized * UnityEngine.Random.Range(minDistance, maxDistance);
             blackboard[key] = source.position + distanced;
         };
     }
 
-    public static Action AssignRandomCloseToTransform(Blackboard blackboard, string key, Transform transform)
+    public static Action AssignRandomCloseToTransform(
+        Blackboard blackboard,
+        string key,
+        Transform transform
+    )
     {
         return () =>
         {
@@ -44,7 +69,12 @@ public static class BasicActions
         };
     }
 
-    public static Action AssignRandomCloseToTransformWithinLos(Blackboard blackboard, string key, Transform transform, int layerMask)
+    public static Action AssignRandomCloseToTransformWithinLos(
+        Blackboard blackboard,
+        string key,
+        Transform transform,
+        int layerMask
+    )
     {
         return () =>
         {
@@ -54,9 +84,11 @@ public static class BasicActions
             do
             {
                 circle = UnityEngine.Random.insideUnitCircle * UnityEngine.Random.Range(12, 17);
-                newTarget = new Vector3(circle.x, transform.position.y, circle.y) + transform.position;
-
-            } while (Physics.Linecast(newTarget + Vector3.up, transform.position + Vector3.up, layerMask));
+                newTarget =
+                    new Vector3(circle.x, transform.position.y, circle.y) + transform.position;
+            } while (
+                Physics.Linecast(newTarget + Vector3.up, transform.position + Vector3.up, layerMask)
+            );
 
             blackboard[key] = newTarget;
         };

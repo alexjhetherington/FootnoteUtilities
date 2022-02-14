@@ -6,10 +6,10 @@ public class CopyPosition : MonoBehaviour
 {
     public Transform target;
     public Vector3 offset = Vector3.zero;
-    
+
     void LateUpdate()
     {
-        if(target != null)
+        if (target != null)
             transform.position = target.position + offset;
     }
 }

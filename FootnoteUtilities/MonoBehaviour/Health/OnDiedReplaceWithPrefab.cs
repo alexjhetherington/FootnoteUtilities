@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class OnDiedReplaceWithPrefab : MonoBehaviour, OnDiedHandler
 {
-    [SerializeField] private GameObject prefab;
+    [SerializeField]
+    private GameObject prefab;
 
     public void OnDied()
     {

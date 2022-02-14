@@ -7,7 +7,7 @@ public class Repeater : Node, ParentNode
     private Node node;
     private Brain brain;
     private ParentNode parent;
-    
+
     private Coroutine deferredRun;
 
     private bool untilSuccess = false;
@@ -24,7 +24,7 @@ public class Repeater : Node, ParentNode
         this.node = node;
         this.brain = brain;
     }
-    
+
     public static Repeater UntilSuccess(Brain brain, Node node)
     {
         return new Repeater(brain, node, true);
@@ -68,10 +68,12 @@ public class Repeater : Node, ParentNode
     {
         brain.StartCoroutine(DeferredRepeat());
     }
-    
+
     public void HandleChildInterrupt(Node child)
     {
-        Debug.LogError("Repeater node does not support interruption. Failed children are cancelled, so should not be possible");
+        Debug.LogError(
+            "Repeater node does not support interruption. Failed children are cancelled, so should not be possible"
+        );
         throw new NotImplementedException();
     }
 }

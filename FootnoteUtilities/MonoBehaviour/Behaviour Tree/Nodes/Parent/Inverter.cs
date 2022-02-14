@@ -37,6 +37,4 @@ public class Inverter : Node, ParentNode
     {
         parent.HandleChildInterrupt(this);
     }
-
-    
 }

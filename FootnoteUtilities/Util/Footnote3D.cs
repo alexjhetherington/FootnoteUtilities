@@ -49,7 +49,11 @@ public static class Footnote3D
         return lineStart + normalizedLineDirection * dot;
     }
 
-    public static RaycastHit GetClosestHitInSphere(Vector3 origin, float maxDistance, float inverseResolution)
+    public static RaycastHit GetClosestHitInSphere(
+        Vector3 origin,
+        float maxDistance,
+        float inverseResolution
+    )
     {
         Ray ray = new Ray();
         ray.origin = origin;
@@ -71,7 +75,10 @@ public static class Footnote3D
                 //Debug.DrawLine(ray.origin, ray.origin + direction, Color.red, 10); // for science
                 RaycastHit candidate;
                 Physics.Raycast(ray, out candidate, maxDistance);
-                if (candidate.collider != null && (closest.collider == null || closest.distance > candidate.distance))
+                if (
+                    candidate.collider != null
+                    && (closest.collider == null || closest.distance > candidate.distance)
+                )
                 {
                     closest = candidate;
                 }
@@ -81,7 +88,12 @@ public static class Footnote3D
         return closest;
     }
 
-    public static Vector3 GetPointBehindTargetWithRaycast(Vector3 source, Vector3 target, float maxDistance, int layerMask)
+    public static Vector3 GetPointBehindTargetWithRaycast(
+        Vector3 source,
+        Vector3 target,
+        float maxDistance,
+        int layerMask
+    )
     {
         RaycastHit hit;
         Vector3 dir = target - source;

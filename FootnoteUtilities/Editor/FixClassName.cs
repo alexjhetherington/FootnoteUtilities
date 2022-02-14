@@ -1,4 +1,3 @@
-
 // FixClassName V 0.1#29092017
 // By Pellegrino ~thp~ Principe
 // A little script to automatically fix class FixClassName when the name
@@ -16,11 +15,12 @@ namespace com.pellegrinoprincipe
     {
         private static string errorMessage = "Ops, something has gone wrong: {0}.";
         private static string refactoringMessage = "The class has been successfully renamed.";
-        private static string noRefactoringMessage = "The class name is the same of the file name. No renaming performed.";
+        private static string noRefactoringMessage =
+            "The class name is the same of the file name. No renaming performed.";
         private static bool scriptSelected;
         private static MonoScript[] scripts;
 
-        // hotkey to activate the item: ALT + SHIFT + f 
+        // hotkey to activate the item: ALT + SHIFT + f
         [MenuItem("Assets/Fix Class Name... &#f")]
         public static void Fix()
         {
@@ -93,7 +93,10 @@ namespace com.pellegrinoprincipe
                     }
                 }
             }
-            catch (Exception exc) { Debug.Log(String.Format(errorMessage, exc.Message)); }
+            catch (Exception exc)
+            {
+                Debug.Log(String.Format(errorMessage, exc.Message));
+            }
         }
     }
 }

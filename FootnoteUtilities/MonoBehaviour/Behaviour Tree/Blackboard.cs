@@ -6,7 +6,7 @@ public class Blackboard : Dictionary<string, object>
 {
     public T Get<T>(string key)
     {
-        return (T) this[key];
+        return (T)this[key];
     }
 
     public bool TryGetTypedValue<T>(string key, out T val)
@@ -14,7 +14,8 @@ public class Blackboard : Dictionary<string, object>
         object temp;
         bool success = TryGetValue(key, out temp);
 
-        if (!success || !(temp is T)) {
+        if (!success || !(temp is T))
+        {
             val = default;
             return false;
         }

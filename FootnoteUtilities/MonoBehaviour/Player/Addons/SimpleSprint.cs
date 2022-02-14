@@ -4,15 +4,22 @@ using UnityEngine;
 
 public class SimpleSprint : MonoBehaviour
 {
-    [SerializeField] private float normalSpeed;
-    [SerializeField] private float sprintSpeed;
+    [SerializeField]
+    private float normalSpeed;
+    [SerializeField]
+    private float sprintSpeed;
 
-    [SerializeField] private float sprintTime;
-    [SerializeField] private float cooldown;
-    [SerializeField] private float rechargeTime;
+    [SerializeField]
+    private float sprintTime;
+    [SerializeField]
+    private float cooldown;
+    [SerializeField]
+    private float rechargeTime;
 
-    [SerializeField] private KeyCode sprintButton;
-    [SerializeField] private FloatVariable stamina;
+    [SerializeField]
+    private KeyCode sprintButton;
+    [SerializeField]
+    private FloatVariable stamina;
 
     private float cooldownRemaining;
 
@@ -46,7 +53,7 @@ public class SimpleSprint : MonoBehaviour
         {
             cooldownRemaining -= Time.deltaTime;
 
-            if(cooldownRemaining <= 0)
+            if (cooldownRemaining <= 0)
             {
                 stamina.Value += Time.deltaTime / rechargeTime;
                 stamina.Value = Mathf.Min(1, stamina.Value);

@@ -15,7 +15,6 @@ public abstract class RuntimeSet<T> : ScriptableObject
             for (int i = itemAddedListeners.Count - 1; i >= 0; i--)
                 itemAddedListeners[i].Invoke(thing);
         }
-            
     }
 
     public void Remove(T thing)
@@ -25,11 +24,10 @@ public abstract class RuntimeSet<T> : ScriptableObject
             Items.Remove(thing);
             for (int i = itemRemovedListeners.Count - 1; i >= 0; i--)
                 itemRemovedListeners[i].Invoke(thing);
-        }   
+        }
     }
 
-    private readonly List<Action<T>> itemAddedListeners =
-           new List<Action<T>>();
+    private readonly List<Action<T>> itemAddedListeners = new List<Action<T>>();
 
     public void RegisterItemAddedListener(Action<T> listener)
     {
@@ -43,8 +41,7 @@ public abstract class RuntimeSet<T> : ScriptableObject
             itemAddedListeners.Remove(listener);
     }
 
-    private readonly List<Action<T>> itemRemovedListeners =
-           new List<Action<T>>();
+    private readonly List<Action<T>> itemRemovedListeners = new List<Action<T>>();
 
     public void RegisterItemRemovedListener(Action<T> listener)
     {

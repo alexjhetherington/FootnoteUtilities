@@ -5,26 +5,27 @@ using UnityEngine.Events;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField] private bool debugInvincible = false;
+    [SerializeField]
+    private bool debugInvincible = false;
     public int maximumHealth = 100;
 
-    [SerializeField] private IntVariable health_so;
+    [SerializeField]
+    private IntVariable health_so;
     private int health_prim;
 
     private OnDiedHandler[] onDiedHandlers;
     private OnHitHandler[] onHitHandlers;
 
-    public int Value {
-        get
-        {
-            return health_so != null ? health_so.Value : health_prim;
-        }
+    public int Value
+    {
+        get { return health_so != null ? health_so.Value : health_prim; }
         set
         {
             if (debugInvincible && Debug.isDebugBuild)
                 return;
 
-            if (value < 0) value = 0;
+            if (value < 0)
+                value = 0;
 
             if (value == 0 && onDiedHandlers != null)
                 foreach (OnDiedHandler onDiedHandler in onDiedHandlers)

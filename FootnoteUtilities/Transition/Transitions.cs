@@ -15,7 +15,11 @@ public static class Transitions
 
     public static void Start(string transitionScene, string nextScene)
     {
-        Start(SceneManagerUtilities.GetBuildIndexByName(transitionScene), null, SceneManagerUtilities.GetBuildIndexByName(nextScene));
+        Start(
+            SceneManagerUtilities.GetBuildIndexByName(transitionScene),
+            null,
+            SceneManagerUtilities.GetBuildIndexByName(nextScene)
+        );
     }
 
     public static void Start(string transitionScene, int nextScene)
@@ -25,9 +29,13 @@ public static class Transitions
 
     public static void Start(string transitionScene, Action onScreenObscured, string nextScene)
     {
-        Start(SceneManagerUtilities.GetBuildIndexByName(transitionScene), onScreenObscured, SceneManagerUtilities.GetBuildIndexByName(nextScene));
+        Start(
+            SceneManagerUtilities.GetBuildIndexByName(transitionScene),
+            onScreenObscured,
+            SceneManagerUtilities.GetBuildIndexByName(nextScene)
+        );
     }
-    
+
     public static void Start(int transitionScene, Action onScreenObscured)
     {
         Start(transitionScene, onScreenObscured, -1);
@@ -47,27 +55,32 @@ public static class Transitions
         }
         else
         {
-            ScenePack.UnpackScene<Transition>(transitionScene, GetUnpackedHandler(transitionScene, onScreenObscured, nextScene));
-            
+            ScenePack.UnpackScene<Transition>(
+                transitionScene,
+                GetUnpackedHandler(transitionScene, onScreenObscured, nextScene)
+            );
         }
     }
 
     private static void DoTransition(int transitionScene, Action onScreenObscured, int nextScene)
     {
         Transition transition = transitions[transitionScene];
-        transition.Obscure(() => {
-            onScreenObscured?.Invoke();
+        transition.Obscure(
+            () =>
+            {
+                onScreenObscured?.Invoke();
 
-            if(nextScene >= 0)
-            {
-                AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextScene);
-                Coroutiner.Instance.StartCoroutine(WaitForSceneLoad(transition, asyncLoad));
+                if (nextScene >= 0)
+                {
+                    AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextScene);
+                    Coroutiner.Instance.StartCoroutine(WaitForSceneLoad(transition, asyncLoad));
+                }
+                else
+                {
+                    transition.Unobscure();
+                }
             }
-            else
-            {
-                transition.Unobscure();
-            }
-        });
+        );
     }
 
     private static IEnumerator WaitForSceneLoad(Transition transition, AsyncOperation asyncLoad)
@@ -78,7 +91,11 @@ public static class Transitions
         transition.Unobscure();
     }
 
-    private static Action<Transition> GetUnpackedHandler(int transitionScene, Action onScreenObscured, int nextScene)
+    private static Action<Transition> GetUnpackedHandler(
+        int transitionScene,
+        Action onScreenObscured,
+        int nextScene
+    )
     {
         return transition =>
         {

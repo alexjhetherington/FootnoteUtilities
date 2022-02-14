@@ -2,4 +2,4 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Coroutiner : Singleton<Coroutiner> {}
+public class Coroutiner : Singleton<Coroutiner> { }

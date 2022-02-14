@@ -60,7 +60,9 @@ public class FirstToFinish : Node, ParentNode
 
     public void HandleChildInterrupt(Node child)
     {
-        Debug.LogError("FirstToFinish node does not support interruption. Failed children are cancelled, so should not be possible. Unless someone added an option for FirstToFinish to only cancel+report to parent when receiving a complete signal");
+        Debug.LogError(
+            "FirstToFinish node does not support interruption. Failed children are cancelled, so should not be possible. Unless someone added an option for FirstToFinish to only cancel+report to parent when receiving a complete signal"
+        );
         throw new NotImplementedException();
     }
 

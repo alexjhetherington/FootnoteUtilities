@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class ScreenSpaceHudHelper : MonoBehaviour
 {
-    [SerializeField] private int verticalEdge = 100;
-    [SerializeField] private int horizontalEdge = 100;
-    
+    [SerializeField]
+    private int verticalEdge = 100;
+    [SerializeField]
+    private int horizontalEdge = 100;
+
     public ScreenPointInfo GetScreenPoint(Vector3 worldPoint, Camera camera)
     {
         ScreenPointInfo output = new ScreenPointInfo();

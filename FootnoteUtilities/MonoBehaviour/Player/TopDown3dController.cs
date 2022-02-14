@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class TopDown3dController : MonoBehaviour, Mover
 {
-    [SerializeField] private float speed = 1;
+    [SerializeField]
+    private float speed = 1;
 
     private CharacterController characterController;
 

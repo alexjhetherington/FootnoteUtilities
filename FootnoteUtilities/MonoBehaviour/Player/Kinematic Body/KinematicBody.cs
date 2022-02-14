@@ -14,44 +14,48 @@ using System.Collections.Generic;
  */
 public class KinematicBody : MonoBehaviour
 {
-	public float slopeLimit = 45f;
-	public float stepOffset = 0.3f;
+    public float slopeLimit = 45f;
+    public float stepOffset = 0.3f;
     public float skinWidth = 0.2f;
 
     public Vector3 overlapCenter = new Vector3();
     public float overlapRadius = 1f;
-    
-	private Vector3 m_upDirection;
 
-	private readonly Collider[] m_overlaps = new Collider[5];
-	private readonly List<RaycastHit> m_contacts = new List<RaycastHit>();
+    private Vector3 m_upDirection;
 
-	private const int MaxSweepSteps = 5;
-	private const float MinMoveDistance = 0f;
+    private readonly Collider[] m_overlaps = new Collider[5];
+    private readonly List<RaycastHit> m_contacts = new List<RaycastHit>();
 
-	public Vector3 velocity { get; set; }
-	public bool isGrounded { get; private set; }
+    private const int MaxSweepSteps = 5;
+    private const float MinMoveDistance = 0f;
+
+    public Vector3 velocity { get; set; }
+    public bool isGrounded { get; private set; }
 
     private Rigidbody rb;
     private Collider c;
 
-    private enum SweepType { LATERAL, VERTICAL }
+    private enum SweepType
+    {
+        LATERAL,
+        VERTICAL
+    }
 
     private void Awake()
-	{
+    {
         rb = GetComponent<Rigidbody>();
         c = GetComponentInChildren<Collider>();
-		InitializeRigidbody();
-	}
+        InitializeRigidbody();
+    }
 
-	private void InitializeRigidbody()
-	{
+    private void InitializeRigidbody()
+    {
         rb.isKinematic = true;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-	}
+    }
 
-	public void Move(Vector3 motion)
-	{
+    public void Move(Vector3 motion)
+    {
         Vector3 startPosition;
 
         //Initialise variables
@@ -64,7 +68,7 @@ public class KinematicBody : MonoBehaviour
             isGrounded = false;
 
             //If we are not rising, we can set grounded at the start which is useful later
-            if(motion.y <= 0)
+            if (motion.y <= 0)
             {
                 RaycastHit hit;
                 if (rb.SweepTest(Vector3.down, out hit, skinWidth + 0.01f))
@@ -81,11 +85,21 @@ public class KinematicBody : MonoBehaviour
 
             lateralVelocity = transform.TransformDirection(lateralVelocity);
             verticalVelocity = transform.TransformDirection(verticalVelocity);
-            
-            CapsuleSweep(SweepType.LATERAL, lateralVelocity.normalized, lateralVelocity.magnitude, stepOffset);
-            CapsuleSweep(SweepType.VERTICAL, verticalVelocity.normalized, verticalVelocity.magnitude, 0);
+
+            CapsuleSweep(
+                SweepType.LATERAL,
+                lateralVelocity.normalized,
+                lateralVelocity.magnitude,
+                stepOffset
+            );
+            CapsuleSweep(
+                SweepType.VERTICAL,
+                verticalVelocity.normalized,
+                verticalVelocity.magnitude,
+                0
+            );
         }
-        
+
         //Handle contacts
         if (m_contacts.Count > 0)
         {
@@ -106,7 +120,11 @@ public class KinematicBody : MonoBehaviour
 
         //Depenetrate
         {
-            int overlapsNum = Physics.OverlapSphereNonAlloc(transform.position + overlapCenter, overlapRadius, m_overlaps);
+            int overlapsNum = Physics.OverlapSphereNonAlloc(
+                transform.position + overlapCenter,
+                overlapRadius,
+                m_overlaps
+            );
 
             if (overlapsNum > 0)
             {
@@ -123,9 +141,18 @@ public class KinematicBody : MonoBehaviour
                     Vector3 direction;
                     float distance;
 
-                    if (Physics.ComputePenetration(c, c.transform.position, c.transform.rotation,
-                                                    otherCollider, otherPosition, otherRotation,
-                                                    out direction, out distance))
+                    if (
+                        Physics.ComputePenetration(
+                            c,
+                            c.transform.position,
+                            c.transform.rotation,
+                            otherCollider,
+                            otherPosition,
+                            otherRotation,
+                            out direction,
+                            out distance
+                        )
+                    )
                     {
                         rb.position += direction * (distance + skinWidth);
                         velocity -= Vector3.Project(velocity, -direction);
@@ -142,10 +169,15 @@ public class KinematicBody : MonoBehaviour
         }
     }
 
-	private void CapsuleSweep(SweepType sweepType, Vector3 direction, float distance, float stepOffset)
-	{
+    private void CapsuleSweep(
+        SweepType sweepType,
+        Vector3 direction,
+        float distance,
+        float stepOffset
+    )
+    {
         Vector3 initialDirection = direction;
-		RaycastHit hitInfo;
+        RaycastHit hitInfo;
         RaycastHit stepHitInfo;
         Vector3 preSweepPosition;
         bool collision;
@@ -178,13 +210,29 @@ public class KinematicBody : MonoBehaviour
 
                 stepCollision = rb.SweepTest(direction.normalized, out stepHitInfo, distance * 2);
                 bool stepAvoidedCollision = !stepCollision && collision;
-                bool stepCollidedFurther = stepCollision && collision && stepHitInfo.distance > hitInfo.distance + 0.001;
-                bool stepHitSteepSlope = stepCollision && Vector3.Angle(m_upDirection, stepHitInfo.normal) >= slopeLimit;
-                bool walkHitShallowSlope = collision && Vector3.Angle(m_upDirection, hitInfo.normal) < slopeLimit;
+                bool stepCollidedFurther =
+                    stepCollision && collision && stepHitInfo.distance > hitInfo.distance + 0.001;
+                bool stepHitSteepSlope =
+                    stepCollision && Vector3.Angle(m_upDirection, stepHitInfo.normal) >= slopeLimit;
+                bool walkHitShallowSlope =
+                    collision && Vector3.Angle(m_upDirection, hitInfo.normal) < slopeLimit;
 
-                if (stepEnabled && !walkHitShallowSlope && !stepHitSteepSlope && (stepAvoidedCollision || stepCollidedFurther))
+                if (
+                    stepEnabled
+                    && !walkHitShallowSlope
+                    && !stepHitSteepSlope
+                    && (stepAvoidedCollision || stepCollidedFurther)
+                )
                 {
-                    IterateMove(sweepType, stepHitInfo, initialDirection, ref direction, ref distance, minBlockAngle, maxBlockAngle);
+                    IterateMove(
+                        sweepType,
+                        stepHitInfo,
+                        initialDirection,
+                        ref direction,
+                        ref distance,
+                        minBlockAngle,
+                        maxBlockAngle
+                    );
 
                     //Clamp rigibody back down
                     {
@@ -207,17 +255,33 @@ public class KinematicBody : MonoBehaviour
                     return; //Stepped!
                 }
             }
-            
+
             //Did not step
             {
                 //Move rigibody back to pre step check position before continuing
                 rb.position = preSweepPosition;
-                IterateMove(sweepType, hitInfo, initialDirection, ref direction, ref distance, minBlockAngle, maxBlockAngle);
+                IterateMove(
+                    sweepType,
+                    hitInfo,
+                    initialDirection,
+                    ref direction,
+                    ref distance,
+                    minBlockAngle,
+                    maxBlockAngle
+                );
             }
         }
-	}
-    
-    private void IterateMove(SweepType sweepType, RaycastHit hitInfo, Vector3 initialDirection, ref Vector3 direction, ref float distance, float minBlockAngle, float maxBlockAngle)
+    }
+
+    private void IterateMove(
+        SweepType sweepType,
+        RaycastHit hitInfo,
+        Vector3 initialDirection,
+        ref Vector3 direction,
+        ref float distance,
+        float minBlockAngle,
+        float maxBlockAngle
+    )
     {
         float safeDistance = distance;
         if (hitInfo.collider != null)
@@ -228,17 +292,17 @@ public class KinematicBody : MonoBehaviour
             rb.position += direction * safeDistance;
             distance -= safeDistance;
         }
-               
+
         Vector3 projectionNormal = hitInfo.normal;
 
         float surfaceAngle = Vector3.Angle(m_upDirection, hitInfo.normal) - 0.001f;
         if ((surfaceAngle >= minBlockAngle) && (surfaceAngle <= maxBlockAngle))
         {
-            if(sweepType == SweepType.LATERAL)
+            if (sweepType == SweepType.LATERAL)
             {
                 projectionNormal = new Vector3(hitInfo.normal.x, 0, hitInfo.normal.z);
             }
-            if(sweepType == SweepType.VERTICAL)
+            if (sweepType == SweepType.VERTICAL)
             {
                 projectionNormal = Vector3.up;
             }
@@ -252,9 +316,12 @@ public class KinematicBody : MonoBehaviour
          * 
          * In some situations, such as running into a corner between 90-180 degrees, the collide and slides should converge
          * into each other.
-         */            
+         */
         var continueDirection = Vector3.ProjectOnPlane(direction, projectionNormal);
         var initialInfluenceDirection = Vector3.ProjectOnPlane(initialDirection, projectionNormal);
-        direction = Vector3.Dot(continueDirection, initialDirection) < 0 ? initialInfluenceDirection : continueDirection;
+        direction =
+            Vector3.Dot(continueDirection, initialDirection) < 0
+                ? initialInfluenceDirection
+                : continueDirection;
     }
 }

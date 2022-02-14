@@ -2,10 +2,14 @@
 
 public class SmoothLookAt : MonoBehaviour
 {
-    [SerializeField] private Transform target;
-    [SerializeField] private float lookSpeed = 2f;
-    [SerializeField] public bool lockVertical = true;
-    [SerializeField] private bool defaultToCamera = true;
+    [SerializeField]
+    private Transform target;
+    [SerializeField]
+    private float lookSpeed = 2f;
+    [SerializeField]
+    public bool lockVertical = true;
+    [SerializeField]
+    private bool defaultToCamera = true;
 
     private Vector3 staticTarget;
 
@@ -21,7 +25,8 @@ public class SmoothLookAt : MonoBehaviour
 
     private void Awake()
     {
-        if (target == null && defaultToCamera) target = Camera.main.transform;
+        if (target == null && defaultToCamera)
+            target = Camera.main.transform;
     }
 
     void Update()
@@ -30,9 +35,14 @@ public class SmoothLookAt : MonoBehaviour
         if (currentTarget != null)
         {
             var lookPos = currentTarget - transform.position;
-            if (lockVertical) lookPos.y = 0; //at somepoint lock max vertical angles probably
+            if (lockVertical)
+                lookPos.y = 0; //at somepoint lock max vertical angles probably
 
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lookPos), Time.deltaTime * lookSpeed);
+            transform.rotation = Quaternion.Lerp(
+                transform.rotation,
+                Quaternion.LookRotation(lookPos),
+                Time.deltaTime * lookSpeed
+            );
         }
     }
 }

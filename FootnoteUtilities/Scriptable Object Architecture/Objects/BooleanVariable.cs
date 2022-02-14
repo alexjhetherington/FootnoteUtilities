@@ -12,10 +12,7 @@ public class BooleanVariable : ScriptableObject
 
     public bool Value
     {
-        get
-        {
-            return _value;
-        }
+        get { return _value; }
         set
         {
             //Not a good idea. Reseting values to their 'default' on scene load will not trigger an event
@@ -29,8 +26,7 @@ public class BooleanVariable : ScriptableObject
         }
     }
 
-    private readonly List<Action<bool>> variableChangedListeners =
-            new List<Action<bool>>();
+    private readonly List<Action<bool>> variableChangedListeners = new List<Action<bool>>();
 
     public void RegisterListener(Action<bool> listener)
     {
