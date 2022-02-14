@@ -38,4 +38,13 @@ public static class FootnoteRectTransformExtensions
         csf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
     }
+
+    public static void CopyPositionFrom(this RectTransform rt, RectTransform copyFrom)
+    {
+        rt.anchorMin = copyFrom.anchorMin;
+        rt.anchorMax = copyFrom.anchorMax;
+        rt.anchoredPosition = copyFrom.anchoredPosition;
+        rt.sizeDelta = copyFrom.sizeDelta;
+        rt.pivot = copyFrom.pivot;
+    }
 }

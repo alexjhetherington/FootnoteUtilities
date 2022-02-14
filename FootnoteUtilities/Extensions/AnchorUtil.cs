@@ -38,6 +38,18 @@ public static class AnchorUtil
         };
     }
 
+    public static AnchorPosParams RightVerticalStretch()
+    {
+        return new AnchorPosParams
+        {
+            anchorMin = new Vector2(1f, 0),
+            anchorMax = new Vector2(1, 1),
+            offsetMin = new Vector2(0, 0),
+            offsetMax = new Vector2(0, 0),
+            pivot = new Vector2(1f, 0.5f)
+        };
+    }
+
     public static AnchorPosParams TopLeft(float x, float y)
     {
         return new AnchorPosParams

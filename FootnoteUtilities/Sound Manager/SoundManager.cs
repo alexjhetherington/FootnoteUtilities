@@ -135,14 +135,14 @@ public class SoundManager : MonoBehaviour
             audioSource.maxDistance = 500; //Default
         }
 
-        audioSource.pitch = 1;
-
-        if (pitchOverride != 0)
-            audioSource.pitch = pitchOverride;
-
         if (soundEntry.pitchVariation != 0)
             audioSource.pitch =
                 1 + Random.Range(-soundEntry.pitchVariation, soundEntry.pitchVariation);
+        else
+            audioSource.pitch = 1;
+
+        if (pitchOverride != 0)
+            audioSource.pitch = pitchOverride;
 
         audioSourceLifecycle.toFollow = followTarget;
 

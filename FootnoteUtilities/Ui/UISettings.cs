@@ -10,7 +10,6 @@ using static AnchorUtil;
 using static UnityEngine.UI.Slider;
 
 /* Helpful things still to be added:
-    * Stop the UI from going off screen (scrollbar!)
     * Manually adding line breaks */
 [CreateAssetMenu()]
 public class UISettings : ScriptableObject
@@ -24,6 +23,8 @@ public class UISettings : ScriptableObject
     private Color titleForeground = Color.white;
     [SerializeField]
     private float titleSize = 32;
+    [SerializeField]
+    private float titleTopmargin = 8;
     [SerializeField]
     private float titleBottomMargin = 8;
 
@@ -95,6 +96,22 @@ public class UISettings : ScriptableObject
     [SerializeField]
     private Vector2 sliderHandleSize = new Vector2(15, 15);
 
+    [Header("Scrollbar")]
+    [SerializeField]
+    private Color scrollbarBackground = Color.grey;
+    [SerializeField]
+    private Sprite scrollbarSprite;
+    [SerializeField]
+    private Color scrollbarHandle = Color.white;
+    [SerializeField]
+    private Sprite scrollbarHandleSprite;
+
+    [SerializeField]
+    private int scrollbarWidth = 20;
+
+    [SerializeField]
+    private int scrollbarInnerPadding = 0;
+
     [Header("Camera")]
     [SerializeField]
     private Rect viewport;
@@ -105,6 +122,24 @@ public class UISettings : ScriptableObject
     private Vector2 screenSizeScaleReference = default;
     [SerializeField]
     private float widthToHeightScaling = 0;
+
+    public RectTransform MakeScrollUi(AnchorPosParams anchorPos, float maxHeight = 0)
+    {
+        //If not stretched, height must be defined
+        if (anchorPos.anchorMin.y == anchorPos.anchorMax.y && maxHeight == 0)
+        {
+            Debug.LogError("Unable to create non-stretched Scroll UI without max height");
+            throw new Exception();
+        }
+
+        //If stretched, height will be ignored
+        if (anchorPos.anchorMin.y != anchorPos.anchorMax.y && maxHeight != 0)
+        {
+            Debug.LogWarning("Creating stretched Scroll UI will ignore maxHeight");
+        }
+
+        return MakeScrollView(MakeUi(anchorPos), maxHeight);
+    }
 
     public RectTransform MakeUi(AnchorPosParams anchorPos)
     {
@@ -158,14 +193,14 @@ public class UISettings : ScriptableObject
         return basePanel;
     }
 
-    public RectTransform Title(string text)
+    public RectTransform Title(string text, float scale = 1)
     {
         var title = UiGo("Title");
         var textMesh = title.AddComponent<TextMeshProUGUI>();
         textMesh.text = text;
         textMesh.color = titleForeground;
-        textMesh.fontSize = titleSize;
-        textMesh.margin = new Vector4(0, 0, 0, titleBottomMargin);
+        textMesh.fontSize = titleSize * scale;
+        textMesh.margin = new Vector4(0, titleTopmargin * scale, 0, titleBottomMargin * scale);
         textMesh.alignment = titleAlignment;
 
         if (titleFont != null)
@@ -179,6 +214,7 @@ public class UISettings : ScriptableObject
 
     public RectTransform Text(
         string text,
+        float scale = 1,
         Color? color = null,
         TextAlignmentOptions? overrideAlignment = null
     )
@@ -187,7 +223,7 @@ public class UISettings : ScriptableObject
         var textMesh = normal.AddComponent<TextMeshProUGUI>();
         textMesh.text = text;
         textMesh.color = color.GetValueOrDefault(textForeground);
-        textMesh.fontSize = textSize;
+        textMesh.fontSize = textSize * scale;
 
         textMesh.alignment = overrideAlignment.GetValueOrDefault(textAligntment);
 
@@ -264,7 +300,7 @@ public class UISettings : ScriptableObject
 
         b.onClick.AddListener(action);
 
-        button.AddChildren(Text(text, buttonForeground));
+        button.AddChildren(Text(text, 1, buttonForeground));
         button.AddPreferredSizing();
 
         var textComp = button.GetComponentInChildren<TextMeshProUGUI>();
@@ -293,7 +329,7 @@ public class UISettings : ScriptableObject
         layout.childControlWidth = true;
         toggle.SetAnchorPos(AnchorUtil.TopHorizontalStretch());
 
-        var txt = Text(text, null, TextAlignmentOptions.MidlineLeft);
+        var txt = Text(text, 1, null, TextAlignmentOptions.MidlineLeft);
         toggle.AddChildren(txt);
 
         var textComponent = txt.GetComponent<TextMeshProUGUI>();
@@ -355,7 +391,7 @@ public class UISettings : ScriptableObject
         out UnityAction<float> changeValue
     )
     {
-        var topLevel = Text(text, null, TextAlignmentOptions.MidlineLeft);
+        var topLevel = Text(text, 1, null, TextAlignmentOptions.MidlineLeft);
         topLevel.gameObject.name = "Slider";
         var bk = UiGo("Background");
         var fill = UiGo("Fill");
@@ -390,10 +426,12 @@ public class UISettings : ScriptableObject
         if (sliderFillSprite != null)
         {
             fillImage.sprite = sliderFillSprite;
+            fillImage.type = Image.Type.Sliced;
         }
         if (sliderSprite != null)
         {
             bkImage.sprite = sliderSprite;
+            bkImage.type = Image.Type.Sliced;
         }
 
         var slider = bk.AddComponent<Slider>();
@@ -412,7 +450,121 @@ public class UISettings : ScriptableObject
         return topLevel;
     }
 
-    private RectTransform Panel(AnchorUtil.AnchorPosParams anchorPos)
+    //TODO Actually add settings for all these bits
+    //TODO Background visuals when panel is smaller than the mask
+    private RectTransform MakeScrollView(RectTransform content, float maxHeightIfNotStretch)
+    {
+        //Positions
+        var scrollView = UiGo("Scroll Container");
+        scrollView.CopyPositionFrom(content);
+
+        // Background Image
+        {
+            Destroy(content.GetComponent<Image>());
+
+            var imageContainer = UiGo("Image Container");
+            //scrollView.AddChildren(imageContainer);
+            imageContainer.SetParent(content.parent, false);
+            var image = imageContainer.AddComponent<Image>();
+
+            imageContainer.pivot = new Vector2(0, 1);
+            imageContainer.anchorMin = new Vector2(0, 1);
+            imageContainer.anchorMax = new Vector2(0, 1);
+
+            if (panelSprite != null)
+            {
+                image.sprite = panelSprite;
+                image.type = Image.Type.Sliced;
+            }
+
+            image.color = panelBackground;
+
+            var panelBackgroundSizer = content.AddComponent<ScrollContentBackgroundSizer>();
+            panelBackgroundSizer.imageRect = image.GetComponent<RectTransform>();
+            panelBackgroundSizer.containerRect = scrollView;
+        }
+
+        scrollView.SetParent(content.parent, false);
+
+        content.SetParent(scrollView);
+        content.SetAnchorPos(TopHorizontalStretch());
+
+        var scrollbarContainer = UiGo("Scroll Bar").SetAnchorPos(AnchorUtil.RightVerticalStretch());
+        scrollbarContainer.SetParent(scrollView, false);
+
+        var handle = UiGo("Handle").SetAnchorPos(AnchorUtil.FullScreenStretch());
+        handle.offsetMin = new Vector2(scrollbarInnerPadding, 0);
+        handle.offsetMax = new Vector2(-scrollbarInnerPadding, 0);
+
+        var slidingArea = UiGo("Sliding Area").SetAnchorPos(AnchorUtil.FullScreenStretch());
+        scrollbarContainer.AddChildren(slidingArea);
+        slidingArea.AddChildren(handle);
+
+        scrollbarContainer.sizeDelta = new Vector2(scrollbarWidth, scrollView.sizeDelta.y);
+
+        //If not stretched, width must be calculated
+        if (scrollView.anchorMin.x == scrollView.anchorMax.x)
+        {
+            var contentSizeFitter = scrollView.AddComponent<ContentSizeFitter>();
+            contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        //If not stretched, height must be defined
+        if (scrollView.anchorMin.y == scrollView.anchorMax.y)
+        {
+            scrollView.sizeDelta = new Vector2(scrollView.sizeDelta.x, maxHeightIfNotStretch);
+        }
+
+        var layout = scrollView.AddComponent<HorizontalLayoutGroup>();
+
+        var scrollRect = scrollView.AddComponent<ScrollRect>();
+        var mask = scrollView.AddComponent<RectMask2D>();
+        var scrollbar = scrollbarContainer.AddComponent<Scrollbar>();
+        var scrollBackground = scrollbarContainer.AddComponent<Image>();
+        var handleImage = handle.AddComponent<Image>();
+        var scrollbarLayout = scrollbarContainer.AddComponent<LayoutElement>();
+
+        scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+
+        scrollBackground.color = scrollbarBackground;
+        if (scrollbarSprite != null)
+        {
+            scrollBackground.sprite = scrollbarSprite;
+            scrollBackground.type = Image.Type.Sliced;
+        }
+
+        handleImage.color = scrollbarHandle;
+        if (scrollbarHandleSprite != null)
+        {
+            handleImage.sprite = scrollbarHandleSprite;
+            handleImage.type = Image.Type.Sliced;
+        }
+
+        scrollbarLayout.ignoreLayout = true;
+
+        layout.childControlHeight = false;
+        layout.childControlWidth = true;
+        layout.childForceExpandHeight = false;
+        layout.childForceExpandWidth = false;
+        layout.childAlignment = TextAnchor.UpperCenter;
+        layout.padding.left = -scrollbarWidth / 2;
+        layout.padding.right = scrollbarWidth / 2;
+
+        scrollRect.content = content;
+        scrollRect.horizontal = false;
+        scrollRect.vertical = true;
+        scrollRect.viewport = scrollView;
+        scrollRect.verticalScrollbar = scrollbar;
+        scrollRect.movementType = ScrollRect.MovementType.Clamped;
+
+        scrollbar.handleRect = handle;
+        scrollbar.direction = Scrollbar.Direction.BottomToTop;
+        scrollRect.scrollSensitivity = 20;
+
+        return content;
+    }
+
+    public RectTransform Panel(AnchorUtil.AnchorPosParams anchorPos)
     {
         var panel = UiGo("Panel").SetAnchorPos(anchorPos);
         panel.AddPreferredSizing();
@@ -462,8 +614,9 @@ public class UISettings : ScriptableObject
 
     public static void DestroyUi(RectTransform ui)
     {
-        Destroy(ui.parent.GetComponent<Canvas>().worldCamera.gameObject);
-        Destroy(ui.parent.gameObject);
+        var root = ui.root;
+        Destroy(root.GetComponent<Canvas>().worldCamera.gameObject);
+        Destroy(root.gameObject);
     }
 
     /* Functions as a quick start guide, and allows you to create a UI in the editor to see what it looks like */
