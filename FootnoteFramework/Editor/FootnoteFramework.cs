@@ -28,13 +28,13 @@ public class FootnoteFramework
 
         List<EditorBuildSettingsScene> scenes = new List<EditorBuildSettingsScene>();
         var utilitiesPluginPath = "Assets/Plugins/FootnoteUtilities/FootnoteUtilities";
+        scenes.Add(new EditorBuildSettingsScene("Assets/Scenes/MainMenu.unity", true));
         scenes.Add(
             new EditorBuildSettingsScene(
                 utilitiesPluginPath + "/Transition/Transitions/ScenePacks/SimpleFade.unity",
                 true
             )
         );
-        scenes.Add(new EditorBuildSettingsScene("Assets/Scenes/MainMenu.unity", true));
         scenes.Add(new EditorBuildSettingsScene("Assets/Scenes/Game.unity", true));
 
         EditorBuildSettings.scenes = scenes.ToArray();
