@@ -8,15 +8,15 @@ public class MovingTexture : MonoBehaviour
     private float xScrollSpeed = 0f;
     [SerializeField]
     private float yScrollSpeed = 0.1f;
-    private Renderer renderer;
+    private Renderer r;
     void Start()
     {
-        renderer = GetComponent<Renderer>();
+        r = GetComponent<Renderer>();
     }
 
     void Update()
     {
-        renderer.material.SetTextureOffset(
+        r.material.SetTextureOffset(
             "_MainTex",
             new Vector2(xScrollSpeed * Time.time, yScrollSpeed * Time.time)
         );
