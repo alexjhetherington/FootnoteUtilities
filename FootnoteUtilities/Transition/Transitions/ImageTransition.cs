@@ -21,15 +21,16 @@ public class ImageTransition : MonoBehaviour, Transition
         onScreenObscured.Invoke();
     }
 
-    public void Unobscure()
+    public void Unobscure(Action onScreenUnobscured)
     {
-        StartCoroutine(_Unobscure());
+        StartCoroutine(_Unobscure(onScreenUnobscured));
     }
 
-    private IEnumerator _Unobscure()
+    private IEnumerator _Unobscure(Action onScreenUnobscured)
     {
         yield return new WaitForSeconds(obscuredTime);
-        StartCoroutine(Fade(0));
+        yield return StartCoroutine(Fade(0));
+        onScreenUnobscured.Invoke();
     }
 
     private IEnumerator Fade(float targetAlpha)

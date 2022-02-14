@@ -8,6 +8,8 @@ public static class Transitions
 {
     private static Dictionary<int, Transition> transitions = new Dictionary<int, Transition>();
 
+    private static bool inTransition = false;
+
     public static void Start(string transitionScene, Action onScreenObscured)
     {
         Start(SceneManagerUtilities.GetBuildIndexByName(transitionScene), onScreenObscured, -1);
@@ -64,6 +66,13 @@ public static class Transitions
 
     private static void DoTransition(int transitionScene, Action onScreenObscured, int nextScene)
     {
+        if (inTransition)
+        {
+            Debug.LogWarning("Tried to start a transition while one was in progress");
+            return;
+        }
+
+        inTransition = true;
         Transition transition = transitions[transitionScene];
         transition.Obscure(
             () =>
@@ -77,7 +86,7 @@ public static class Transitions
                 }
                 else
                 {
-                    transition.Unobscure();
+                    transition.Unobscure(() => inTransition = false);
                 }
             }
         );
@@ -88,7 +97,7 @@ public static class Transitions
         while (!asyncLoad.isDone)
             yield return null;
 
-        transition.Unobscure();
+        transition.Unobscure(() => inTransition = false);
     }
 
     private static Action<Transition> GetUnpackedHandler(

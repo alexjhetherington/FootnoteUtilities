@@ -7,5 +7,5 @@ using UnityEngine.SceneManagement;
 public interface Transition
 {
     void Obscure(Action onScreenObscured);
-    void Unobscure();
+    void Unobscure(Action onScreenUnobscured);
 }

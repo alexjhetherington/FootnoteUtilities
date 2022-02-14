@@ -20,8 +20,9 @@ public class ParticleTransition : MonoBehaviour, Transition
         onScreenObscured.Invoke();
     }
 
-    public void Unobscure()
+    public void Unobscure(Action onScreenUnobscured)
     {
         ps.Stop();
+        onScreenUnobscured.Invoke();
     }
 }
