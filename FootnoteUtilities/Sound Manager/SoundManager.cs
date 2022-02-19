@@ -165,7 +165,8 @@ public class SoundManager : MonoBehaviour
         if (pitchOverride != 0)
             audioSource.pitch = pitchOverride;
 
-        audioSourceLifecycle.SetFollowTarget(followTarget);
+        if (followTarget != null)
+            audioSourceLifecycle.SetFollowTarget(followTarget);
 
         if (soundEntry.maxSimultaneousPlaying > 0)
         {
