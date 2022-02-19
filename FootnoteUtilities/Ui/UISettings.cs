@@ -415,6 +415,7 @@ public class UISettings : ScriptableObject
         var bkImage = bk.AddComponent<Image>();
         var fillImage = fill.AddComponent<Image>();
 
+        handleImage.preserveAspect = true;
         handleImage.color = sliderHandle;
         bkImage.color = sliderBackground;
         fillImage.color = sliderFill;
