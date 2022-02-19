@@ -8,10 +8,17 @@ public class SoundManager : MonoBehaviour
         string,
         List<SoundEntry>
     >();
+
+    private Dictionary<string, List<AudioSource>> currentSounds = new Dictionary<
+        string,
+        List<AudioSource>
+    >();
+
     private GameObject prototype;
 
     private AudioSource music;
 
+    #region Init
     private void Init()
     {
         prototype = new GameObject("Sound Prototype");
@@ -44,8 +51,22 @@ public class SoundManager : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    //== Basic Controls
+    #region Update
+    void Update()
+    {
+        foreach (List<AudioSource> clipGroup in currentSounds.Values)
+        {
+            if (clipGroup.SortByDistanceIfUnordered(activeAudioListener.transform.position))
+            {
+                LimitMaxSounds(clipGroup[0].clip.name);
+            }
+        }
+    }
+    #endregion
+
+    #region FX
     public AudioSource PlaySoundInternal(
         AudioClip audioClip,
         Vector3 position,
@@ -144,12 +165,69 @@ public class SoundManager : MonoBehaviour
         if (pitchOverride != 0)
             audioSource.pitch = pitchOverride;
 
-        audioSourceLifecycle.toFollow = followTarget;
+        audioSourceLifecycle.SetFollowTarget(followTarget);
+
+        if (soundEntry.maxSimultaneousPlaying > 0)
+        {
+            var existing = currentSounds.SafeGet(soundEntry.audioClip.name);
+            existing.Add(audioSource);
+
+            if (existing.Count > soundEntry.maxSimultaneousPlaying)
+            {
+                audioSource.volume = 0; // Revisit if audio fade in becomes a problem for new sounds
+            }
+        }
 
         audioSource.Play();
         return audioSource;
     }
 
+    public void Release(AudioSource audioSource)
+    {
+        if (currentSounds.ContainsKey(audioSource.clip.name))
+        {
+            currentSounds[audioSource.clip.name].Remove(audioSource);
+            LimitMaxSounds(audioSource.clip.name); //In case a volume 0 sound should now be faded in
+        }
+
+        SoundManager.CancelExistingFade(audioSource);
+        PoolManager.ReleaseObject(audioSource.gameObject);
+    }
+
+    //TODO make sure this is the correct way round
+    private void LimitMaxSounds(string audioClipName)
+    {
+        //Audioclip name should only have one entry
+        var soundEntry = groupedSoundEntries[audioClipName][0];
+        var audioSources = currentSounds[audioClipName];
+
+        if (soundEntry.maxSimultaneousPlaying == 0)
+        {
+            Debug.LogWarning(
+                "Tried to limit the number of sounds for an unlimited entry: " + audioClipName,
+                this
+            );
+            return;
+        }
+
+        for (int i = 0; i < audioSources.Count; i++)
+        {
+            if (i < soundEntry.maxSimultaneousPlaying)
+            {
+                //Play the top N sounds
+                FadeTo(audioSources[i], soundEntry.volume, 5f);
+            }
+            else
+            {
+                //Mute the rest
+                FadeTo(audioSources[i], 0, 5f);
+            }
+        }
+    }
+
+    #endregion
+
+    #region Music
     public void PlayMusicInternal(string name, float fadeTime)
     {
         if (music == null)
@@ -188,8 +266,9 @@ public class SoundManager : MonoBehaviour
         music.outputAudioMixerGroup = soundEntry.audioMixerGroup;
         music.Play();
     }
+    #endregion
 
-    //== Fading in and out - with handling of halting halfway through
+    #region Fading FX
     private static Dictionary<AudioSource, Coroutine> fadingAudioSources = new Dictionary<
         AudioSource,
         Coroutine
@@ -286,34 +365,50 @@ public class SoundManager : MonoBehaviour
             fadingAudioSources.Remove(audioSource);
         }
     }
+    #endregion
 
-    //===Singleton Related things===
-
-    public static AudioSource PlaySound(AudioClip audioClip, float pitchOverride)
+    #region Public Static Interface
+    public static AudioSource PlaySound(AudioClip audioClip, float pitchOverride = 0)
     {
         return Instance.PlaySoundInternal(audioClip.name, new Vector3(), null, pitchOverride);
     }
     public static AudioSource PlaySound(
         AudioClip audioClip,
-        Vector3 position = new Vector3(),
-        Transform followTarget = null,
+        Vector3 position,
         float pitchOverride = 0
     )
     {
-        return Instance.PlaySoundInternal(audioClip.name, position, followTarget, pitchOverride);
+        return Instance.PlaySoundInternal(audioClip.name, position, null, pitchOverride);
     }
-    public static AudioSource PlaySound(string name, float pitchOverride)
+    public static AudioSource PlaySound(
+        AudioClip audioClip,
+        Transform followTarget,
+        float pitchOverride = 0
+    )
+    {
+        return Instance.PlaySoundInternal(
+            audioClip.name,
+            new Vector3(),
+            followTarget,
+            pitchOverride
+        );
+    }
+
+    public static AudioSource PlaySound(string name, float pitchOverride = 0)
     {
         return Instance.PlaySoundInternal(name, new Vector3(), null, pitchOverride);
     }
     public static AudioSource PlaySound(
         string name,
-        Vector3 position = new Vector3(),
-        Transform followTarget = null,
+        Transform followTarget,
         float pitchOverride = 0
     )
     {
-        return Instance.PlaySoundInternal(name, position, followTarget, pitchOverride);
+        return Instance.PlaySoundInternal(name, new Vector3(), followTarget, pitchOverride);
+    }
+    public static AudioSource PlaySound(string name, Vector3 position, float pitchOverride = 0)
+    {
+        return Instance.PlaySoundInternal(name, position, null, pitchOverride);
     }
 
     public static void PlayMusic(AudioClip audioClip, float fadeTime)
@@ -343,6 +438,25 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    private static AudioListener _activeAudioListener;
+    public static AudioListener activeAudioListener
+    {
+        get
+        {
+            if (!_activeAudioListener || !_activeAudioListener.isActiveAndEnabled)
+            {
+                Debug.Log("Finding a new audio listener");
+                _activeAudioListener = FindObjectOfType<AudioListener>();
+            }
+
+            return _activeAudioListener;
+        }
+        // The above approach should work for most games
+        // If you switch audio listeners mid scene, consider
+        // manually setting the audio listener for better performance
+        set { _activeAudioListener = value; }
+    }
+
     void Awake()
     {
         // Only one instance of SoundManager at a time!
@@ -356,4 +470,5 @@ public class SoundManager : MonoBehaviour
 
         Init();
     }
+    #endregion
 }

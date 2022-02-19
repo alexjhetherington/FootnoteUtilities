@@ -28,7 +28,9 @@ public class SoundEntry
 
     public string[] aliases;
 
+    public CustomFalloff customFalloff;
+
     public AudioMixerGroup audioMixerGroup;
 
-    public CustomFalloff customFalloff;
+    public int maxSimultaneousPlaying = 0;
 }
