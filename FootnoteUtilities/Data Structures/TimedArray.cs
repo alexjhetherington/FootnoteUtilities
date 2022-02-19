@@ -1,10 +1,9 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class TimedArray<T>
 {
-    private struct TimedItem
+    public struct TimedItem
     {
         public float timeLeft;
         public T item;
@@ -18,7 +17,25 @@ public class TimedArray<T>
 
     private List<TimedItem> _timedArray = new List<TimedItem>();
 
-    private int FindItem(T item)
+    public Tuple<TimedItem, TimedItem> AfterAndBefore(float timeLeft)
+    {
+        for (int i = 0; i < _timedArray.Count; i++)
+        {
+            TimedItem currentItem = _timedArray[i];
+            if (currentItem.timeLeft > timeLeft)
+            {
+                if (i < 0)
+                {
+                    return Tuple.Create(currentItem, _timedArray[i - 1]);
+                }
+                return Tuple.Create(currentItem, currentItem);
+            }
+        }
+
+        return Tuple.Create(_timedArray[_timedArray.Count - 1], _timedArray[_timedArray.Count - 1]);
+    }
+
+    private int FindFirst(T item)
     {
         for (int i = 0; i < _timedArray.Count; i++)
         {
@@ -34,16 +51,7 @@ public class TimedArray<T>
 
     public void Insert(float time, T item)
     {
-        //Debug.Log("Add: " + item);
-        int index = FindItem(item);
-        if (index >= 0)
-        {
-            _timedArray[index] = new TimedItem(time, item);
-        }
-        else
-        {
-            _timedArray.Add(new TimedItem(time, item));
-        }
+        _timedArray.Add(new TimedItem(time, item));
     }
 
     public void Tick(float deltaTime)
@@ -66,7 +74,7 @@ public class TimedArray<T>
 
     public bool Exists(T item)
     {
-        int index = FindItem(item);
+        int index = FindFirst(item);
         if (index >= 0)
         {
             return true;
