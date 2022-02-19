@@ -256,7 +256,8 @@ public class SoundManager : MonoBehaviour
 
     public void StopMusicInternal(float fadeTime)
     {
-        StartCoroutine(FadeOut_ManualCoroutine(music, fadeTime));
+        if (music != null)
+            StartCoroutine(FadeOut_ManualCoroutine(music, fadeTime));
     }
 
     private IEnumerator FadeNextMusic(SoundEntry soundEntry, float fadeTime)
