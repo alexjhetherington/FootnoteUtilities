@@ -36,4 +36,15 @@ public static class FootnoteMonoBehaviourExtensions
             action.Invoke(progress);
         }
     }
+
+    public static Coroutine DoAtEndOfFrame(this MonoBehaviour monoBehaviour, Action action)
+    {
+        return monoBehaviour.StartCoroutine(DoAtEndOfFrame(action));
+    }
+
+    private static IEnumerator DoAtEndOfFrame(Action action)
+    {
+        yield return new WaitForEndOfFrame();
+        action.Invoke();
+    }
 }
