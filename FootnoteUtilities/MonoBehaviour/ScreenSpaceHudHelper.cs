@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ScreenSpaceHudHelper : MonoBehaviour
 {
@@ -9,6 +10,13 @@ public class ScreenSpaceHudHelper : MonoBehaviour
     [SerializeField]
     private int horizontalEdge = 100;
 
+    private Canvas canvas;
+
+    public void Awake()
+    {
+        canvas = GetComponentInParent<Canvas>();
+    }
+
     public ScreenPointInfo GetScreenPoint(Vector3 worldPoint, Camera camera)
     {
         ScreenPointInfo output = new ScreenPointInfo();
@@ -16,13 +24,18 @@ public class ScreenSpaceHudHelper : MonoBehaviour
 
         Vector3 worldToScreenPoint = camera.WorldToScreenPoint(worldPoint);
 
+        Vector2 canvasDimensions = canvas.GetComponent<RectTransform>().sizeDelta;
+
+        worldToScreenPoint.x /= Screen.width / canvasDimensions.x;
+        worldToScreenPoint.y /= Screen.height / canvasDimensions.y;
+
         if (worldToScreenPoint.z < 0)
         {
-            worldToScreenPoint.y = Screen.height - worldToScreenPoint.y;
-            if (worldToScreenPoint.x >= Screen.width / 2)
+            worldToScreenPoint.y = canvasDimensions.y - worldToScreenPoint.y;
+            if (worldToScreenPoint.x >= canvasDimensions.x / 2)
                 worldToScreenPoint.x = -1;
             else
-                worldToScreenPoint.x = Screen.width + 1;
+                worldToScreenPoint.x = canvasDimensions.x + 1;
         }
 
         if (worldToScreenPoint.x < horizontalEdge)
@@ -31,9 +44,9 @@ public class ScreenSpaceHudHelper : MonoBehaviour
             output.leftEdge = true;
             output.rightEdge = false;
         }
-        else if (worldToScreenPoint.x > Screen.width - horizontalEdge)
+        else if (worldToScreenPoint.x > canvasDimensions.x - horizontalEdge)
         {
-            output.screenPoint.x = Screen.width - horizontalEdge;
+            output.screenPoint.x = canvasDimensions.x - horizontalEdge;
             output.leftEdge = false;
             output.rightEdge = true;
         }
@@ -50,9 +63,9 @@ public class ScreenSpaceHudHelper : MonoBehaviour
             output.topEdge = false;
             output.bottomEdge = true;
         }
-        else if (worldToScreenPoint.y > Screen.height - verticalEdge)
+        else if (worldToScreenPoint.y > canvasDimensions.y - verticalEdge)
         {
-            output.screenPoint.y = Screen.height - verticalEdge;
+            output.screenPoint.y = canvasDimensions.y - verticalEdge;
             output.topEdge = true;
             output.bottomEdge = false;
         }
