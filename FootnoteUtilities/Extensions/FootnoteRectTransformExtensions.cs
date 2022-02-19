@@ -11,6 +11,24 @@ public static class FootnoteRectTransformExtensions
         return rectTransform;
     }
 
+    public static RectTransform ModifyInline<T>(
+        this RectTransform rectTransform,
+        String gameObjectName,
+        Action<T> action
+    ) where T : Component
+    {
+        var array = rectTransform.GetComponentsInChildren<T>();
+        foreach (T component in array)
+        {
+            if (component.gameObject.name.Equals(gameObjectName))
+            {
+                action.Invoke(component);
+            }
+        }
+
+        return rectTransform;
+    }
+
     public static RectTransform SetAnchorPos(this RectTransform rt, AnchorPosParams anchorParams)
     {
         rt.anchorMin = anchorParams.anchorMin;
