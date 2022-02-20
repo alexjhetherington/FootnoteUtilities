@@ -192,6 +192,7 @@ public class SoundManager : MonoBehaviour
         }
 
         SoundManager.CancelExistingFade(audioSource);
+        audioSource.Stop();
         PoolManager.ReleaseObject(audioSource.gameObject);
     }
 

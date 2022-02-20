@@ -6,13 +6,7 @@ public class AudioSourceLifeCycle : MonoBehaviour
 {
     private Transform toFollow;
     private bool following = false;
-    public float startTime;
     public AudioSource audioSource;
-
-    void Start()
-    {
-        startTime = Time.time;
-    }
 
     void Update()
     {
