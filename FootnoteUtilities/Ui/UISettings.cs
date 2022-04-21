@@ -44,6 +44,8 @@ public class UISettings : ScriptableObject
     [SerializeField]
     private Sprite panelSprite;
     [SerializeField]
+    private Material panelMaterial;
+    [SerializeField]
     private int padding = 20;
     [SerializeField]
     private int verticalSpacing = 4;
@@ -62,7 +64,7 @@ public class UISettings : ScriptableObject
     [SerializeField]
     private Sprite buttonSprite;
     [SerializeField]
-    private int buttonPadding = 4;
+    private Vector4 buttonPadding = new Vector4(4, 4, 4, 4);
     [SerializeField]
     private Vector2 overrideButtonSize = default;
 
@@ -123,7 +125,30 @@ public class UISettings : ScriptableObject
     [SerializeField]
     private float widthToHeightScaling = 0;
 
-    public RectTransform MakeScrollUi(AnchorPosParams anchorPos, float maxHeight = 0)
+    //Options, height stretch/maxHeight, width stretched, autoWidth
+    //Height Stretch, Width Stretch -- Full screen and nested items will be stretched to fit
+    //MaxHeight, Width Stretch -- Height is limited and nested items will be stretched to fit; rare case because small box with fixed width is rare
+    //Height Stretch, AutoWidth -- Full screen and nested and nested items choose their own size
+    //MaxHeight, AutoWidth -- Normal case for small boxes
+
+    public RectTransform MakeFullScreenScrollUi(ContentSizeFitter.FitMode contentWidthFitMode)
+    {
+        return MakeScrollUi(AnchorUtil.FullScreenStretch(), contentWidthFitMode);
+    }
+
+    public RectTransform MakeAnchoredScrollUiWithMaxHeight(
+        AnchorPosParams anchorPosParams,
+        float maxHeight
+    )
+    {
+        return MakeScrollUi(anchorPosParams, ContentSizeFitter.FitMode.PreferredSize, maxHeight);
+    }
+
+    private RectTransform MakeScrollUi(
+        AnchorPosParams anchorPos,
+        ContentSizeFitter.FitMode contentWidthFitMode = ContentSizeFitter.FitMode.PreferredSize,
+        float maxHeight = 0
+    )
     {
         //If not stretched, height must be defined
         if (anchorPos.anchorMin.y == anchorPos.anchorMax.y && maxHeight == 0)
@@ -135,10 +160,12 @@ public class UISettings : ScriptableObject
         //If stretched, height will be ignored
         if (anchorPos.anchorMin.y != anchorPos.anchorMax.y && maxHeight != 0)
         {
-            Debug.LogWarning("Creating stretched Scroll UI will ignore maxHeight");
+            Debug.LogWarning(
+                "Creating stretched Scroll UI will ignore maxHeight. Perhaps you want to use MakeFullScreenScrollUi"
+            );
         }
 
-        return MakeScrollView(MakeUi(anchorPos), maxHeight);
+        return MakeScrollView(MakeUi(anchorPos), contentWidthFitMode, maxHeight);
     }
 
     public RectTransform MakeUi(AnchorPosParams anchorPos)
@@ -160,7 +187,7 @@ public class UISettings : ScriptableObject
         Canvas canvas = rootGo.AddComponent<Canvas>();
         GraphicRaycaster raycaster = rootGo.AddComponent<GraphicRaycaster>();
 
-        cam.clearFlags = CameraClearFlags.Nothing;
+        cam.clearFlags = CameraClearFlags.Depth;
         cam.depth = 50;
         cam.cullingMask = 1 << LayerMask.NameToLayer("UI");
 
@@ -273,6 +300,7 @@ public class UISettings : ScriptableObject
             colours.highlightedColor = overrideColors[1];
             colours.pressedColor = overrideColors[0];
             colours.selectedColor = overrideColors[0];
+            colours.fadeDuration = 0;
         }
         else
         {
@@ -280,16 +308,19 @@ public class UISettings : ScriptableObject
             colours.highlightedColor = buttonHighlight;
             colours.pressedColor = buttonBackground;
             colours.selectedColor = buttonBackground;
+            colours.fadeDuration = 0;
         }
         b.colors = colours;
 
         var layout = button.AddComponent<VerticalLayoutGroup>();
         layout.childControlHeight = true;
         layout.childControlWidth = true;
-        layout.padding.left = buttonPadding;
-        layout.padding.top = buttonPadding;
-        layout.padding.right = buttonPadding;
-        layout.padding.bottom = buttonPadding;
+        layout.padding = new RectOffset(
+            (int)buttonPadding.x,
+            (int)buttonPadding.y,
+            (int)buttonPadding.z,
+            (int)buttonPadding.w
+        );
 
         if (overrideButtonSize != default)
         {
@@ -415,7 +446,6 @@ public class UISettings : ScriptableObject
         var bkImage = bk.AddComponent<Image>();
         var fillImage = fill.AddComponent<Image>();
 
-        handleImage.preserveAspect = true;
         handleImage.color = sliderHandle;
         bkImage.color = sliderBackground;
         fillImage.color = sliderFill;
@@ -453,7 +483,11 @@ public class UISettings : ScriptableObject
 
     //TODO Actually add settings for all these bits
     //TODO Background visuals when panel is smaller than the mask
-    private RectTransform MakeScrollView(RectTransform content, float maxHeightIfNotStretch)
+    private RectTransform MakeScrollView(
+        RectTransform content,
+        ContentSizeFitter.FitMode contentWidthFitMode,
+        float maxHeightIfNotStretch
+    )
     {
         //Positions
         var scrollView = UiGo("Scroll Container");
@@ -477,6 +511,10 @@ public class UISettings : ScriptableObject
                 image.sprite = panelSprite;
                 image.type = Image.Type.Sliced;
             }
+            if (panelMaterial != null)
+            {
+                image.material = panelMaterial;
+            }
 
             image.color = panelBackground;
 
@@ -488,7 +526,9 @@ public class UISettings : ScriptableObject
         scrollView.SetParent(content.parent, false);
 
         content.SetParent(scrollView);
-        content.SetAnchorPos(TopHorizontalStretch());
+        content.SetAnchorPos(AnchorUtil.TopHorizontalStretch());
+
+        content.GetComponent<ContentSizeFitter>().horizontalFit = contentWidthFitMode;
 
         var scrollbarContainer = UiGo("Scroll Bar").SetAnchorPos(AnchorUtil.RightVerticalStretch());
         scrollbarContainer.SetParent(scrollView, false);
@@ -516,7 +556,7 @@ public class UISettings : ScriptableObject
             scrollView.sizeDelta = new Vector2(scrollView.sizeDelta.x, maxHeightIfNotStretch);
         }
 
-        var layout = scrollView.AddComponent<HorizontalLayoutGroup>();
+        //var layout = scrollView.AddComponent<HorizontalLayoutGroup>();
 
         var scrollRect = scrollView.AddComponent<ScrollRect>();
         var mask = scrollView.AddComponent<RectMask2D>();
@@ -543,13 +583,13 @@ public class UISettings : ScriptableObject
 
         scrollbarLayout.ignoreLayout = true;
 
-        layout.childControlHeight = false;
+        /*layout.childControlHeight = false;
         layout.childControlWidth = true;
         layout.childForceExpandHeight = false;
         layout.childForceExpandWidth = false;
         layout.childAlignment = TextAnchor.UpperCenter;
         layout.padding.left = -scrollbarWidth / 2;
-        layout.padding.right = scrollbarWidth / 2;
+        layout.padding.right = scrollbarWidth / 2;*/
 
         scrollRect.content = content;
         scrollRect.horizontal = false;
@@ -584,6 +624,10 @@ public class UISettings : ScriptableObject
         {
             image.sprite = panelSprite;
             image.type = Image.Type.Sliced;
+        }
+        if (panelMaterial != null)
+        {
+            image.material = panelMaterial;
         }
 
         image.color = panelBackground;
