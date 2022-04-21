@@ -21,7 +21,6 @@ public class ScrollContentBackgroundSizer : UIBehaviour
 
         cachedThis.GetWorldCorners(worldCorners);
         cachedThis.GetLocalCorners(localCorners);
-        Debug.Log(cachedThis.gameObject.name);
 
         float width =
             (containerRect.InverseTransformPoint(worldCorners[2])).x
@@ -42,9 +41,5 @@ public class ScrollContentBackgroundSizer : UIBehaviour
             cachedContainerParent.rect.height / 2,
             0
         );
-
-        Debug.DrawLine(imageRect.position, imageRect.position + Vector3.up, Color.green, 1f);
-        Debug.Log(imageRect.localPosition);
-        Debug.Log(imageRect.position);
     }
 }
