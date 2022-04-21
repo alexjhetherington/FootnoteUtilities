@@ -1,4 +1,7 @@
-﻿using UnityEngine.SceneManagement;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public static class SceneManagerUtilities
 {
@@ -8,7 +11,7 @@ public static class SceneManagerUtilities
         {
             string path = SceneUtility.GetScenePathByBuildIndex(i);
 
-            if (path.Contains("/" + name + ".unity"))
+            if (path.Contains(name))
                 return i;
         }
 
