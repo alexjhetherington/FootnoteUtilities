@@ -141,3 +141,4 @@ Generic classes cannot be serialised, but extending classes that define the gene
 * ShakeableTransform: https://github.com/IronWarrior/UnityCameraShake/blob/master/Assets/ShakeableTransform.cs
 * Sokpop Shaders: https://www.youtube.com/watch?v=XatLA5SGgAs
 * Waypoint Gizmos: https://github.com/SebLague/Intro-to-Gamedev/blob/master/Episode%2023/Assets/Guard.cs
+* UI Blur Shader: https://gist.github.com/JohannesMP/7d62f282705169a2855a0aac315ff381#file-uiblur_shared-cginc
