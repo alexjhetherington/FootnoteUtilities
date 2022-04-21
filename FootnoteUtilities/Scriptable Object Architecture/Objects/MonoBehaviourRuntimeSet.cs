@@ -11,7 +11,10 @@ public class MonoBehaviourRuntimeSet : RuntimeSet<MonoBehaviour>
     {
         foreach (MonoBehaviour monoBehaviour in Items)
         {
-            yield return (T)monoBehaviour;
+            if (monoBehaviour is T)
+                yield return (T)monoBehaviour;
+            else
+                yield return monoBehaviour.GetComponent<T>();
         }
     }
 }
