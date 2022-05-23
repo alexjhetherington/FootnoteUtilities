@@ -71,9 +71,9 @@ This isn't possible for code that you intend to share between projects where lay
 * PlayableAnimationController - trigger non legacy animations from code by directly passing clips
 * Behaviour trees - see the README in the Behaviour Tree folder
 
-### Scene Pack
+### Static Scenes
 
-Scenes can be used as containers for arbitrary collections of gameobjects. When unpacked a scene is loaded and all its contents set to DoNotDestroyOnLoad, then the scene is unloaded. If unpacked again, a reference to the existing collection of gameobjects is returned.
+Scenes can be "unpacked" to emulate a sort of "static scene". When unpacked a scene is loaded and all its contents set to DoNotDestroyOnLoad, then the scene is unloaded. If unpacked again, a reference to the existing collection of gameobjects is returned.
 
 This workflow is similar to using singletons but allows for references to be set between game objects easily.
 
@@ -142,3 +142,4 @@ Generic classes cannot be serialised, but extending classes that define the gene
 * Sokpop Shaders: https://www.youtube.com/watch?v=XatLA5SGgAs
 * Waypoint Gizmos: https://github.com/SebLague/Intro-to-Gamedev/blob/master/Episode%2023/Assets/Guard.cs
 * UI Blur Shader: https://gist.github.com/JohannesMP/7d62f282705169a2855a0aac315ff381#file-uiblur_shared-cginc
+* Scene Reference: https://github.com/NibbleByte/UnitySceneReference

@@ -57,11 +57,25 @@ public static class Transitions
         }
         else
         {
-            ScenePack.UnpackScene<Transition>(
-                transitionScene,
-                GetUnpackedHandler(transitionScene, onScreenObscured, nextScene)
+            Coroutiner.Instance.StartCoroutine(
+                LoadThenDoTransition(transitionScene, onScreenObscured, nextScene)
             );
         }
+    }
+
+    private static IEnumerator LoadThenDoTransition(
+        int transitionScene,
+        Action onScreenObscured,
+        int nextScene
+    )
+    {
+        var transition = StaticSceneHelper.GetComponentFromSceneAsStatic<Transition>(
+            StaticSceneHelper.LoadType.Async,
+            transitionScene
+        );
+        yield return transition;
+        transitions[transitionScene] = transition.value;
+        DoTransition(transitionScene, onScreenObscured, nextScene);
     }
 
     private static void DoTransition(int transitionScene, Action onScreenObscured, int nextScene)
