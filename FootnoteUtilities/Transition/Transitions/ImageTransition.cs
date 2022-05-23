@@ -28,7 +28,7 @@ public class ImageTransition : MonoBehaviour, Transition
 
     private IEnumerator _Unobscure(Action onScreenUnobscured)
     {
-        yield return new WaitForSeconds(obscuredTime);
+        yield return new WaitForSecondsRealtime(obscuredTime);
         yield return StartCoroutine(Fade(0));
         onScreenUnobscured.Invoke();
     }
@@ -37,7 +37,11 @@ public class ImageTransition : MonoBehaviour, Transition
     {
         while (image.color.a != targetAlpha)
         {
-            var newAlpha = Mathf.MoveTowards(image.color.a, targetAlpha, Time.deltaTime / fadeTime);
+            var newAlpha = Mathf.MoveTowards(
+                image.color.a,
+                targetAlpha,
+                Time.unscaledDeltaTime / fadeTime
+            );
             image.color = new Color(image.color.r, image.color.g, image.color.b, newAlpha);
             yield return null;
         }
