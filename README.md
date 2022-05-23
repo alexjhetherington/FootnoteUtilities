@@ -96,7 +96,7 @@ In summary, this implementation offers:
 
 ### Sound Manager
 
-Create the folder Resources/SoundManager. Inside put instantiations of the SoundLibrary ScriptableObject. SoundLibrary has a simple but clean interface that allows you to easily manager your sounds all in one place, including volume and pitch adjustment.
+Create the folder Resources/SoundLibraries. Inside put instantiations of the SoundLibrary ScriptableObject. SoundLibrary has a simple but clean interface that allows you to easily manager your sounds all in one place, including volume and pitch adjustment.
 
 Sounds can be played by calling SoundManager.Play. Various overrides allow the sound to have an override pitch, volume, follow another gameobject etc.
 

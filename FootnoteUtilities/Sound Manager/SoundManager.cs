@@ -29,7 +29,7 @@ public class SoundManager : MonoBehaviour
 
         prototype.SetActive(false);
 
-        var soundLibrary2 = Resources.LoadAll<SoundLibrary>("SoundManager");
+        var soundLibrary2 = Resources.LoadAll<SoundLibrary>("SoundLibraries");
         Init(soundLibrary2);
     }
 
