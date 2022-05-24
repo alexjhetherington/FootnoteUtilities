@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class BillboardRotation : MonoBehaviour
 {
+    [SerializeField]
+    private bool rotateAtEdgeOfScreen;
+
     private Camera cam;
 
     void Start()
@@ -13,11 +16,17 @@ public class BillboardRotation : MonoBehaviour
 
     void LateUpdate()
     {
-        if (cam != null)
+        if (cam == null)
+            return;
+        if (rotateAtEdgeOfScreen)
         {
             var lookPos = transform.position - cam.transform.position;
             lookPos.y = 0;
             transform.rotation = Quaternion.LookRotation(lookPos);
+        }
+        else
+        {
+            transform.forward = -camera.transform.forward;
         }
     }
 }
