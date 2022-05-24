@@ -26,7 +26,9 @@ public class BillboardRotation : MonoBehaviour
         }
         else
         {
-            transform.forward = -camera.transform.forward;
+            var lookPos = -camera.transform.forward;
+            lookPos.y = 0;
+            transform.forward = lookPos;
         }
     }
 }
