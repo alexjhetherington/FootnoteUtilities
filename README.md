@@ -102,6 +102,21 @@ Sounds can be played by calling SoundManager.Play. Various overrides allow the s
 
 Sounds can be assigned an alias name. If multiple sounds have the same alias name, one will be selected random for play.
 
+### Tags
+
+A super simple tag library with 2 purposes:
+
+* Avoid using strings
+* Allow tags to be shared across projects
+
+To define a tag, create a new Tag scriptable object.
+
+To add a tag to a gameobject, add the Tags component, and drag a tag on to it.
+
+To check for tags, call the extension MonoBehaviour.HasTag()
+
+To search for tags easily in the project interface, use t:Tag
+
 ### Textures
 
 * Some simple noise textures for prototyping
