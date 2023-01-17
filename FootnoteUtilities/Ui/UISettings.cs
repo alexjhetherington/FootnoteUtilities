@@ -94,6 +94,8 @@ public class UISettings : ScriptableObject
     [SerializeField]
     private Sprite sliderHandleSprite;
     [SerializeField]
+    private float sliderDisplayedValueWidth = 50f;
+    [SerializeField]
     private Vector2 sliderSize = new Vector2(100, 15);
     [SerializeField]
     private Vector2 sliderHandleSize = new Vector2(15, 15);
@@ -348,23 +350,19 @@ public class UISettings : ScriptableObject
         return container;
     }
 
-    public RectTransform Toggle(
-        string text,
-        UnityAction<bool> action,
-        out UnityAction<bool> changeValue
-    )
+    public RectTransform Toggle(string text, UnityAction<bool> action, out Toggle toggle)
     {
-        var toggle = UiGo("Toggle");
-        var layout = toggle.AddComponent<HorizontalLayoutGroup>();
+        var toggleInternal = UiGo("Toggle");
+        var layout = toggleInternal.AddComponent<HorizontalLayoutGroup>();
         layout.childControlHeight = true;
         layout.childControlWidth = true;
-        toggle.SetAnchorPos(AnchorUtil.TopHorizontalStretch());
+        toggleInternal.SetAnchorPos(AnchorUtil.TopHorizontalStretch());
 
         var txt = Text(text, 1, null, TextAlignmentOptions.MidlineLeft);
-        toggle.AddChildren(txt);
+        toggleInternal.AddChildren(txt);
 
         var textComponent = txt.GetComponent<TextMeshProUGUI>();
-        var preferredSize = toggle.AddComponent<LayoutElement>();
+        var preferredSize = toggleInternal.AddComponent<LayoutElement>();
         preferredSize.minWidth =
             textComponent.preferredWidth + toggleSize.x + minTextWidgetDistance;
 
@@ -390,15 +388,15 @@ public class UISettings : ScriptableObject
         txt.AddChildren(backgroundGo);
         backgroundGo.AddChildren(checkMarkGo);
 
-        var t = toggle.AddComponent<Toggle>();
+        var t = toggleInternal.AddComponent<Toggle>();
         t.image = backgroundImage;
         t.graphic = checkmarkBackground;
 
         t.onValueChanged.AddListener(action);
 
-        changeValue = b => t.SetIsOnWithoutNotify(b);
+        toggle = t;
 
-        return toggle;
+        return toggleInternal;
     }
 
     /*public RectTransform DropDown(
@@ -418,8 +416,9 @@ public class UISettings : ScriptableObject
         float left,
         float right,
         bool wholeNumbers,
+        Func<float, string> displayValueMapper,
         UnityAction<float> action,
-        out UnityAction<float> changeValue
+        out Slider slider
     )
     {
         var topLevel = Text(text, 1, null, TextAlignmentOptions.MidlineLeft);
@@ -433,10 +432,22 @@ public class UISettings : ScriptableObject
         preferredSize.minWidth =
             textComponent.preferredWidth + sliderSize.x + minTextWidgetDistance;
 
+        float sliderOffset = 0;
+        TextMeshProUGUI displayedValueTextMesh = default;
+        if (displayValueMapper != null)
+        {
+            var displayedValue = Text("9999", 1, null, TextAlignmentOptions.MidlineRight);
+            displayedValueTextMesh = displayedValue.GetComponent<TextMeshProUGUI>();
+            topLevel.AddChildren(displayedValue);
+            displayedValue.SetAnchorPos(AnchorUtil.CentreRight(0));
+            displayedValue.sizeDelta = new Vector2(sliderDisplayedValueWidth, 0);
+            sliderOffset = minTextWidgetDistance + sliderDisplayedValueWidth;
+        }
+
         topLevel.AddChildren(bk);
         bk.AddChildren(fill, handle);
 
-        bk.SetAnchorPos(AnchorUtil.CentreRight(0));
+        bk.SetAnchorPos(AnchorUtil.CentreRight(sliderOffset));
         bk.sizeDelta = sliderSize;
 
         fill.SetAnchorPos(AnchorUtil.FullScreenStretch());
@@ -465,19 +476,28 @@ public class UISettings : ScriptableObject
             bkImage.type = Image.Type.Sliced;
         }
 
-        var slider = bk.AddComponent<Slider>();
+        var sliderInternal = bk.AddComponent<Slider>();
 
-        slider.minValue = left;
-        slider.maxValue = right;
-        slider.wholeNumbers = wholeNumbers;
-        slider.direction = Direction.LeftToRight;
+        sliderInternal.minValue = left;
+        sliderInternal.maxValue = right;
+        sliderInternal.wholeNumbers = wholeNumbers;
+        sliderInternal.direction = Direction.LeftToRight;
 
-        slider.targetGraphic = handleImage;
-        slider.handleRect = handle;
-        slider.fillRect = fill;
+        sliderInternal.targetGraphic = handleImage;
+        sliderInternal.handleRect = handle;
+        sliderInternal.fillRect = fill;
 
-        slider.onValueChanged.AddListener(action);
-        changeValue = f => slider.SetValueWithoutNotify(f);
+        sliderInternal.onValueChanged.AddListener(action);
+        slider = sliderInternal;
+
+        if (displayedValueTextMesh != null)
+        {
+            displayedValueTextMesh.text = displayValueMapper(left);
+            slider.onValueChanged.AddListener(
+                f => displayedValueTextMesh.text = displayValueMapper(f)
+            );
+        }
+
         return topLevel;
     }
 
@@ -657,6 +677,26 @@ public class UISettings : ScriptableObject
         return rt;
     }
 
+    public static void ScrollToTarget(
+        ScrollRect scrollRect,
+        RectTransform contentPanel,
+        RectTransform target
+    )
+    {
+        Canvas.ForceUpdateCanvases();
+
+        if (contentPanel == null || target == null || scrollRect == null)
+        {
+            Debug.LogWarning("Not scrolling to target; Invalid target or content");
+            return;
+        }
+
+        contentPanel.anchoredPosition =
+            //-(Vector2)target.localPosition;
+            (Vector2)scrollRect.transform.InverseTransformPoint(contentPanel.position)
+            - (Vector2)scrollRect.transform.InverseTransformPoint(target.position);
+    }
+
     public static void DestroyUi(RectTransform ui)
     {
         var root = ui.root;
@@ -690,18 +730,34 @@ public class UISettings : ScriptableObject
                                 this.Text("This is double nested line 1"),
                                 this.Text("This is double nested line 2"),
                                 this.Button("Button", () => Debug.Log("Button Pressed")),
-                                this.Toggle("Toggle", b => Debug.Log(b), out var act2),
-                                this.Slider("Slider", 0, 1, false, f => Debug.Log(f), out var act3)
+                                this.Toggle("Toggle", b => Debug.Log(b), out var toggle),
+                                this.Slider(
+                                    "Slider",
+                                    0,
+                                    1,
+                                    false,
+                                    f => f.ToString(),
+                                    f => Debug.Log(f),
+                                    out var slider
+                                )
                             )
                     ),
                 this.Text("This is main line 2"),
                 this.Button("Button", () => Debug.Log("Button Pressed")),
                 this.Toggle("Toggle", b => Debug.Log(b), out var act4),
-                this.Slider("Slider", 0, 1, false, f => Debug.Log(f), out var act5)
+                this.Slider(
+                    "Slider",
+                    0,
+                    1,
+                    false,
+                    f => f.ToString(),
+                    f => Debug.Log(f),
+                    out var act5
+                )
             );
 
-        act2.Invoke(true); //Set toggle state
-        act3.Invoke(0.5f); //Set slider state
+        toggle.isOn = true;
+        slider.value = 0.5f;
 
         //This is not required in play mode :)
         LayoutRebuilder.ForceRebuildLayoutImmediate(ui);
