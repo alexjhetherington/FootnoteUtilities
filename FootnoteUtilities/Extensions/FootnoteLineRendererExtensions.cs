@@ -4,11 +4,11 @@ using UnityEngine;
 
 public static class FootnoteLineRendererExtensions
 {
-    public const int MAX_TRAIL_POSITIONS = 200;
+    //public const int MAX_TRAIL_POSITIONS = 200;
 
     public static Vector3[] GetPositions(this LineRenderer lineRenderer)
     {
-        int trailPointsCount = lineRenderer.GetPositions(new Vector3[MAX_TRAIL_POSITIONS]);
+        int trailPointsCount = lineRenderer.GetPositions(new Vector3[lineRenderer.positionCount]);
         Vector3[] positions = new Vector3[trailPointsCount];
         lineRenderer.GetPositions(positions);
 
