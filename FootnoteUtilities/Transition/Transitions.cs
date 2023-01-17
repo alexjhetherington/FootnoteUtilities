@@ -10,6 +10,13 @@ public static class Transitions
 
     private static bool inTransition = false;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    public static void Init()
+    {
+        transitions = new Dictionary<int, Transition>();
+        inTransition = false;
+    }
+
     public static void Start(string transitionScene, Action onScreenObscured)
     {
         Start(SceneManagerUtilities.GetBuildIndexByName(transitionScene), onScreenObscured, -1);
