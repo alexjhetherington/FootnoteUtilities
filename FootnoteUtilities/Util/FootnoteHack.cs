@@ -36,4 +36,17 @@ public static class FootnoteHack
 
         return MatchObjects.ToArray();
     }
+
+    public static T[] FindObjectsOfTypeIncludingDisabled<T>(GameObject[] rootObjects)
+    {
+        var MatchObjects = new List<T>();
+
+        foreach (var ro in rootObjects)
+        {
+            var Matches = ro.GetComponentsInChildren<T>(true);
+            MatchObjects.AddRange(Matches);
+        }
+
+        return MatchObjects.ToArray();
+    }
 }
