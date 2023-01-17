@@ -52,6 +52,12 @@ public class PlayableAnimationController : MonoBehaviour
         _playableGraph.Play();
     }
 
+    public void SetSpeed(AnimationClip animationClip, float speed)
+    {
+        int index = GetIndex(animationClip);
+        _animationMixerPlayable.GetInput(index).SetSpeed(speed);
+    }
+
     public void CrossFade(AnimationClip animationClip, float fadeTime)
     {
         int index = GetIndex(animationClip);
@@ -96,7 +102,7 @@ public class PlayableAnimationController : MonoBehaviour
         }
         else
         {
-            Debug.Log("Animation not found, adding to the playable graph");
+            //Debug.Log("Animation not found, adding to the playable graph");
             var clipPlayable = AnimationClipPlayable.Create(_playableGraph, animationClip);
             index = nextIndex++;
             clipIndex.Add(animationClip, index);
