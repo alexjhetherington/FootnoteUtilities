@@ -31,13 +31,17 @@ public class FootnoteFramework
         scenes.Add(new EditorBuildSettingsScene("Assets/Scenes/MainMenu.unity", true));
         scenes.Add(
             new EditorBuildSettingsScene(
-                utilitiesPluginPath + "/Transition/Transitions/ScenePacks/SimpleFade.unity",
+                utilitiesPluginPath + "/Transition/Transitions/Scenes/SimpleFade.unity",
                 true
             )
         );
         scenes.Add(new EditorBuildSettingsScene("Assets/Scenes/Game.unity", true));
 
         EditorBuildSettings.scenes = scenes.ToArray();
+
+        EditorSettings.enterPlayModeOptionsEnabled = true;
+        EditorSettings.enterPlayModeOptions =
+            EnterPlayModeOptions.DisableSceneReload | EnterPlayModeOptions.DisableDomainReload;
     }
 
     static void CopyPrototypes(string sourceDir, string targetDir)

@@ -90,12 +90,13 @@ public class Menus : MonoBehaviour
                     0,
                     10,
                     false,
+                    null,
                     f => SetVolume(fxMixer, fxVolParam, f),
                     out var changeFxSlider
                 )
             );
 
-            LoadVolume(fxMixer, fxVolParam, f => changeFxSlider.Invoke(f));
+            LoadVolume(fxMixer, fxVolParam, f => changeFxSlider.value = f);
         }
 
         if (musicMixer != null)
@@ -106,12 +107,13 @@ public class Menus : MonoBehaviour
                     0,
                     10,
                     false,
+                    null,
                     f => SetVolume(musicMixer, musicVolParam, f),
                     out var changeMusicSlider
                 )
             );
 
-            LoadVolume(musicMixer, musicVolParam, f => changeMusicSlider.Invoke(f));
+            LoadVolume(musicMixer, musicVolParam, f => changeMusicSlider.value = f);
         }
 
         ui.AddChildren(
