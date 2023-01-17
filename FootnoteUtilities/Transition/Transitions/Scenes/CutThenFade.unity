@@ -152,9 +152,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79b13c2dc26b6ec4cb645252f050dea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeOutTime: 0.4
+  fadeOutTime: 0
   fadeInTime: 0.4
-  obscuredTime: 0.8
+  obscuredTime: 0
   image: {fileID: 1547516594}
 --- !u!114 &319847618
 MonoBehaviour:

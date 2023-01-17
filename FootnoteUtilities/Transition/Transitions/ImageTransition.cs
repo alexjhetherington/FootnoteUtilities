@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class ImageTransition : MonoBehaviour, Transition
 {
-    public float fadeTime;
+    public float fadeOutTime;
+    public float fadeInTime;
     public float obscuredTime;
     public Image image;
 
@@ -17,7 +18,7 @@ public class ImageTransition : MonoBehaviour, Transition
 
     private IEnumerator _Obscure(Action onScreenObscured)
     {
-        yield return StartCoroutine(Fade(1f));
+        yield return StartCoroutine(Fade(1f, fadeOutTime));
         onScreenObscured.Invoke();
     }
 
@@ -29,11 +30,16 @@ public class ImageTransition : MonoBehaviour, Transition
     private IEnumerator _Unobscure(Action onScreenUnobscured)
     {
         yield return new WaitForSecondsRealtime(obscuredTime);
-        yield return StartCoroutine(Fade(0));
+
+        //Little bit of a hack but basically forces the transition to happen after a few frames
+        yield return null;
+        yield return new WaitForSecondsRealtime(0.2f);
+
+        yield return StartCoroutine(Fade(0, fadeInTime));
         onScreenUnobscured.Invoke();
     }
 
-    private IEnumerator Fade(float targetAlpha)
+    private IEnumerator Fade(float targetAlpha, float fadeTime)
     {
         while (image.color.a != targetAlpha)
         {
