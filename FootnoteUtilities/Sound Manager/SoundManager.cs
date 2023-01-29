@@ -373,6 +373,9 @@ public class SoundManager : MonoBehaviour
     #region Public Static Interface
     public static AudioSource PlaySound(AudioClip audioClip, float pitchOverride = 0)
     {
+        if (audioClip == null)
+            return null;
+
         return Instance.PlaySoundInternal(audioClip.name, new Vector3(), null, pitchOverride);
     }
     public static AudioSource PlaySound(
@@ -381,6 +384,9 @@ public class SoundManager : MonoBehaviour
         float pitchOverride = 0
     )
     {
+        if (audioClip == null)
+            return null;
+
         return Instance.PlaySoundInternal(audioClip.name, position, null, pitchOverride);
     }
     public static AudioSource PlaySound(
@@ -389,6 +395,9 @@ public class SoundManager : MonoBehaviour
         float pitchOverride = 0
     )
     {
+        if (audioClip == null)
+            return null;
+
         return Instance.PlaySoundInternal(
             audioClip.name,
             new Vector3(),
@@ -416,6 +425,9 @@ public class SoundManager : MonoBehaviour
 
     public static void PlayMusic(AudioClip audioClip, float fadeTime)
     {
+        if (audioClip == null)
+            return;
+
         Instance.PlayMusicInternal(audioClip.name, fadeTime);
     }
     public static void PlayMusic(string name, float fadeTime)

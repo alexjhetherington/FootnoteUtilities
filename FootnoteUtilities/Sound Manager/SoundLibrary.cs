@@ -21,7 +21,13 @@ public class SoundLibrary : ScriptableObject
             soundEntry.audioMixerGroup = audioMixerGroup;
 
             if (soundEntry.audioClip == null)
-                Debug.LogError("Null AudioClip found in the sound library!", this);
+            {
+                Debug.LogError(
+                    "Null AudioClip found in the sound library; not adding it to list of available sounds!",
+                    this
+                );
+                continue;
+            }
 
             if (!dictionary.ContainsKey(soundEntry.audioClip.name))
                 dictionary[soundEntry.audioClip.name] = new List<SoundEntry>();
