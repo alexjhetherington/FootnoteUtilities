@@ -56,7 +56,8 @@ public static class FootnoteRectTransformExtensions
     {
         foreach (RectTransform child in children)
         {
-            child.SetParent(rt, false);
+            if (child != null) // Support adding null rect transforms to allow inline skipping elements
+                child.SetParent(rt, false);
         }
         return rt;
     }
