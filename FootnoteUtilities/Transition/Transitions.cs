@@ -19,7 +19,12 @@ public static class Transitions
 
     public static void Start(string transitionScene, Action onScreenObscured)
     {
-        Start(SceneManagerUtilities.GetBuildIndexByName(transitionScene), onScreenObscured, -1);
+        Start(
+            SceneManagerUtilities.GetBuildIndexByName(transitionScene),
+            onScreenObscured,
+            -1,
+            null
+        );
     }
 
     public static void Start(string transitionScene, string nextScene)
@@ -27,13 +32,14 @@ public static class Transitions
         Start(
             SceneManagerUtilities.GetBuildIndexByName(transitionScene),
             null,
-            SceneManagerUtilities.GetBuildIndexByName(nextScene)
+            SceneManagerUtilities.GetBuildIndexByName(nextScene),
+            null
         );
     }
 
     public static void Start(string transitionScene, int nextScene)
     {
-        Start(SceneManagerUtilities.GetBuildIndexByName(transitionScene), null, nextScene);
+        Start(SceneManagerUtilities.GetBuildIndexByName(transitionScene), null, nextScene, null);
     }
 
     public static void Start(string transitionScene, Action onScreenObscured, string nextScene)
@@ -41,31 +47,71 @@ public static class Transitions
         Start(
             SceneManagerUtilities.GetBuildIndexByName(transitionScene),
             onScreenObscured,
-            SceneManagerUtilities.GetBuildIndexByName(nextScene)
+            SceneManagerUtilities.GetBuildIndexByName(nextScene),
+            null
+        );
+    }
+
+    public static void Start(
+        string transitionScene,
+        string nextScene,
+        Action onSceneLoadedAndObscured
+    )
+    {
+        Start(
+            SceneManagerUtilities.GetBuildIndexByName(transitionScene),
+            null,
+            SceneManagerUtilities.GetBuildIndexByName(nextScene),
+            onSceneLoadedAndObscured
+        );
+    }
+
+    public static void Start(
+        string transitionScene,
+        Action onScreenObscured,
+        string nextScene,
+        Action onSceneLoadedAndObscured
+    )
+    {
+        Start(
+            SceneManagerUtilities.GetBuildIndexByName(transitionScene),
+            onScreenObscured,
+            SceneManagerUtilities.GetBuildIndexByName(nextScene),
+            onSceneLoadedAndObscured
         );
     }
 
     public static void Start(int transitionScene, Action onScreenObscured)
     {
-        Start(transitionScene, onScreenObscured, -1);
+        Start(transitionScene, onScreenObscured, -1, null);
     }
 
     public static void Start(int transitionScene, int nextScene)
     {
-        Start(transitionScene, null, nextScene);
+        Start(transitionScene, null, nextScene, null);
     }
 
-    public static void Start(int transitionScene, Action onScreenObscured, int nextScene)
+    public static void Start(
+        int transitionScene,
+        Action onScreenObscured,
+        int nextScene,
+        Action onSceneLoadedAndObscured
+    )
     {
         Debug.Log(SceneUtility.GetScenePathByBuildIndex(transitionScene));
         if (transitions.ContainsKey(transitionScene))
         {
-            DoTransition(transitionScene, onScreenObscured, nextScene);
+            DoTransition(transitionScene, onScreenObscured, nextScene, onSceneLoadedAndObscured);
         }
         else
         {
             Coroutiner.Instance.StartCoroutine(
-                LoadThenDoTransition(transitionScene, onScreenObscured, nextScene)
+                LoadThenDoTransition(
+                    transitionScene,
+                    onScreenObscured,
+                    nextScene,
+                    onSceneLoadedAndObscured
+                )
             );
         }
     }
@@ -73,7 +119,8 @@ public static class Transitions
     private static IEnumerator LoadThenDoTransition(
         int transitionScene,
         Action onScreenObscured,
-        int nextScene
+        int nextScene,
+        Action onSceneLoadedAndObscured
     )
     {
         var transition = StaticSceneHelper.GetComponentFromSceneAsStatic<Transition>(
@@ -82,10 +129,15 @@ public static class Transitions
         );
         yield return transition;
         transitions[transitionScene] = transition.value;
-        DoTransition(transitionScene, onScreenObscured, nextScene);
+        DoTransition(transitionScene, onScreenObscured, nextScene, onSceneLoadedAndObscured);
     }
 
-    private static void DoTransition(int transitionScene, Action onScreenObscured, int nextScene)
+    private static void DoTransition(
+        int transitionScene,
+        Action onScreenObscured,
+        int nextScene,
+        Action onSceneLoadedAndObscured
+    )
     {
         if (inTransition)
         {
@@ -103,7 +155,9 @@ public static class Transitions
                 if (nextScene >= 0)
                 {
                     AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextScene);
-                    Coroutiner.Instance.StartCoroutine(WaitForSceneLoad(transition, asyncLoad));
+                    Coroutiner.Instance.StartCoroutine(
+                        WaitForSceneLoad(onSceneLoadedAndObscured, transition, asyncLoad)
+                    );
                 }
                 else
                 {
@@ -113,24 +167,30 @@ public static class Transitions
         );
     }
 
-    private static IEnumerator WaitForSceneLoad(Transition transition, AsyncOperation asyncLoad)
+    private static IEnumerator WaitForSceneLoad(
+        Action onSceneLoadedAndObscured,
+        Transition transition,
+        AsyncOperation asyncLoad
+    )
     {
         while (!asyncLoad.isDone)
             yield return null;
 
+        onSceneLoadedAndObscured?.Invoke();
         transition.Unobscure(() => inTransition = false);
     }
 
     private static Action<Transition> GetUnpackedHandler(
         int transitionScene,
         Action onScreenObscured,
-        int nextScene
+        int nextScene,
+        Action onSceneLoadedAndObscured
     )
     {
         return transition =>
         {
             transitions.Add(transitionScene, transition);
-            DoTransition(transitionScene, onScreenObscured, nextScene);
+            DoTransition(transitionScene, onScreenObscured, nextScene, onSceneLoadedAndObscured);
         };
     }
 }
