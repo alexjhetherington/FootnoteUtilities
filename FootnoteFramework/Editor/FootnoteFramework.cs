@@ -49,7 +49,14 @@ public class FootnoteFramework
         Directory.CreateDirectory(targetDir);
 
         foreach (var file in Directory.GetFiles(sourceDir))
-            File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)));
+            try
+            {
+                File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)));
+            }
+            catch (IOException e)
+            {
+                Debug.LogWarning("Could not copy file. Error: " + e.Message);
+            }
 
         foreach (var directory in Directory.GetDirectories(sourceDir))
             CopyPrototypes(directory, Path.Combine(targetDir, Path.GetFileName(directory)));
